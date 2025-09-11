@@ -58,6 +58,9 @@ export default function Home() {
                 <a href="#how-to" style={{ color: '#e2e8f0', textDecoration: 'none', fontSize: '1.1rem' }}>
                   How To
                 </a>
+                <a href="/admin" style={{ color: '#e2e8f0', textDecoration: 'none', fontSize: '1.1rem' }}>
+                  Admin
+                </a>
                 <SimpleWallet onAccountChange={setAccount} />
               </div>
             </div>

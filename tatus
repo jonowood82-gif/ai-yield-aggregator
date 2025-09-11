@@ -1,0 +1,5 @@
+[33m70e9d9e[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m Fix POL token support - update from MATIC to POL for Polygon network
+[33mb501aee[m Add more DeFi tokens and improve token display with icons
+[33mf74ad08[m Add network indicator to show current network (ETH/Polygon) status
+[33m82b8727[m Add comprehensive How It Works and How To sections for beginners
+[33m512649c[m Add Polygon network support with network switching and token balances
