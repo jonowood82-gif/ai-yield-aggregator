@@ -51,6 +51,9 @@ export default function Home() {
                 <a href="#how-it-works" style={{ color: '#e2e8f0', textDecoration: 'none', fontSize: '1.1rem' }}>
                   How It Works
                 </a>
+                <a href="#how-to" style={{ color: '#e2e8f0', textDecoration: 'none', fontSize: '1.1rem' }}>
+                  How To
+                </a>
                 <SimpleWallet onAccountChange={setAccount} />
               </div>
             </div>
@@ -241,8 +244,232 @@ export default function Home() {
               <h2 style={{ fontSize: '3rem', fontWeight: 'bold', color: '#1a202c', marginBottom: '20px' }}>
                 How It Works
               </h2>
-              <p style={{ fontSize: '1.3rem', color: '#64748b' }}>
-                Get started in 3 simple steps
+              <p style={{ fontSize: '1.3rem', color: '#64748b', maxWidth: '800px', margin: '0 auto' }}>
+                Our AI-powered platform automatically finds the best yield opportunities across multiple DeFi protocols, 
+                optimizing your portfolio for maximum returns while managing risk.
+              </p>
+            </div>
+            
+            {/* AI Process Flow */}
+            <div style={{ 
+              display: 'grid', 
+              gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', 
+              gap: '30px',
+              marginBottom: '60px'
+            }}>
+              <div style={{ 
+                background: 'white', 
+                borderRadius: '15px', 
+                padding: '30px', 
+                boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+                border: '1px solid #e2e8f0'
+              }}>
+                <div style={{ 
+                  width: '60px', 
+                  height: '60px', 
+                  background: 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)', 
+                  borderRadius: '50%', 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center', 
+                  marginBottom: '20px',
+                  fontSize: '1.5rem'
+                }}>
+                  🔍
+                </div>
+                <h3 style={{ fontSize: '1.3rem', fontWeight: 'bold', marginBottom: '15px', color: '#1a202c' }}>
+                  Market Analysis
+                </h3>
+                <p style={{ color: '#64748b', lineHeight: '1.6', fontSize: '0.95rem' }}>
+                  Our AI continuously monitors 50+ DeFi protocols including Compound, Aave, Yearn, and Curve Finance, 
+                  analyzing real-time APY rates, liquidity, and risk factors.
+                </p>
+              </div>
+              
+              <div style={{ 
+                background: 'white', 
+                borderRadius: '15px', 
+                padding: '30px', 
+                boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+                border: '1px solid #e2e8f0'
+              }}>
+                <div style={{ 
+                  width: '60px', 
+                  height: '60px', 
+                  background: 'linear-gradient(135deg, #10b981 0%, #3b82f6 100%)', 
+                  borderRadius: '50%', 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center', 
+                  marginBottom: '20px',
+                  fontSize: '1.5rem'
+                }}>
+                  🧠
+                </div>
+                <h3 style={{ fontSize: '1.3rem', fontWeight: 'bold', marginBottom: '15px', color: '#1a202c' }}>
+                  AI Optimization
+                </h3>
+                <p style={{ color: '#64748b', lineHeight: '1.6', fontSize: '0.95rem' }}>
+                  Advanced algorithms calculate optimal portfolio allocation using Modern Portfolio Theory, 
+                  considering risk-adjusted returns, Sharpe ratios, and diversification benefits.
+                </p>
+              </div>
+              
+              <div style={{ 
+                background: 'white', 
+                borderRadius: '15px', 
+                padding: '30px', 
+                boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+                border: '1px solid #e2e8f0'
+              }}>
+                <div style={{ 
+                  width: '60px', 
+                  height: '60px', 
+                  background: 'linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)', 
+                  borderRadius: '50%', 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center', 
+                  marginBottom: '20px',
+                  fontSize: '1.5rem'
+                }}>
+                  ⚡
+                </div>
+                <h3 style={{ fontSize: '1.3rem', fontWeight: 'bold', marginBottom: '15px', color: '#1a202c' }}>
+                  Auto-Execution
+                </h3>
+                <p style={{ color: '#64748b', lineHeight: '1.6', fontSize: '0.95rem' }}>
+                  Once you approve the recommended strategy, our smart contracts automatically execute trades 
+                  across multiple protocols to optimize your yield in real-time.
+                </p>
+              </div>
+            </div>
+
+            {/* Key Features */}
+            <div style={{ 
+              background: 'white', 
+              borderRadius: '20px', 
+              padding: '40px', 
+              boxShadow: '0 8px 25px rgba(0, 0, 0, 0.1)',
+              border: '1px solid #e2e8f0'
+            }}>
+              <h3 style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '30px', color: '#1a202c', textAlign: 'center' }}>
+                Key Features
+              </h3>
+              <div style={{ 
+                display: 'grid', 
+                gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', 
+                gap: '25px' 
+              }}>
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '15px' }}>
+                  <div style={{ 
+                    width: '40px', 
+                    height: '40px', 
+                    background: 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)', 
+                    borderRadius: '8px', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center',
+                    fontSize: '1.2rem',
+                    flexShrink: 0
+                  }}>
+                    🛡️
+                  </div>
+                  <div>
+                    <h4 style={{ fontSize: '1.1rem', fontWeight: 'bold', marginBottom: '8px', color: '#1a202c' }}>
+                      Risk Management
+                    </h4>
+                    <p style={{ color: '#64748b', fontSize: '0.9rem', lineHeight: '1.5' }}>
+                      Advanced risk scoring and diversification to protect your investments
+                    </p>
+                  </div>
+                </div>
+                
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '15px' }}>
+                  <div style={{ 
+                    width: '40px', 
+                    height: '40px', 
+                    background: 'linear-gradient(135deg, #10b981 0%, #3b82f6 100%)', 
+                    borderRadius: '8px', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center',
+                    fontSize: '1.2rem',
+                    flexShrink: 0
+                  }}>
+                    📊
+                  </div>
+                  <div>
+                    <h4 style={{ fontSize: '1.1rem', fontWeight: 'bold', marginBottom: '8px', color: '#1a202c' }}>
+                      Real-time Analytics
+                    </h4>
+                    <p style={{ color: '#64748b', fontSize: '0.9rem', lineHeight: '1.5' }}>
+                      Live portfolio performance tracking and detailed analytics
+                    </p>
+                  </div>
+                </div>
+                
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '15px' }}>
+                  <div style={{ 
+                    width: '40px', 
+                    height: '40px', 
+                    background: 'linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)', 
+                    borderRadius: '8px', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center',
+                    fontSize: '1.2rem',
+                    flexShrink: 0
+                  }}>
+                    🔄
+                  </div>
+                  <div>
+                    <h4 style={{ fontSize: '1.1rem', fontWeight: 'bold', marginBottom: '8px', color: '#1a202c' }}>
+                      Multi-Chain Support
+                    </h4>
+                    <p style={{ color: '#64748b', fontSize: '0.9rem', lineHeight: '1.5' }}>
+                      Optimize across Ethereum and Polygon networks
+                    </p>
+                  </div>
+                </div>
+                
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '15px' }}>
+                  <div style={{ 
+                    width: '40px', 
+                    height: '40px', 
+                    background: 'linear-gradient(135deg, #f59e0b 0%, #ef4444 100%)', 
+                    borderRadius: '8px', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center',
+                    fontSize: '1.2rem',
+                    flexShrink: 0
+                  }}>
+                    💰
+                  </div>
+                  <div>
+                    <h4 style={{ fontSize: '1.1rem', fontWeight: 'bold', marginBottom: '8px', color: '#1a202c' }}>
+                      Gas Optimization
+                    </h4>
+                    <p style={{ color: '#64748b', fontSize: '0.9rem', lineHeight: '1.5' }}>
+                      Smart batching and gas optimization to minimize transaction costs
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* How To Get Started Section */}
+        <div id="how-to" style={{ padding: '80px 0', background: 'white' }}>
+          <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 20px' }}>
+            <div style={{ textAlign: 'center', marginBottom: '60px' }}>
+              <h2 style={{ fontSize: '3rem', fontWeight: 'bold', color: '#1a202c', marginBottom: '20px' }}>
+                How To Get Started
+              </h2>
+              <p style={{ fontSize: '1.3rem', color: '#64748b', maxWidth: '800px', margin: '0 auto' }}>
+                New to DeFi? No problem! Follow our beginner-friendly guide to start earning optimized yields.
               </p>
             </div>
             
@@ -251,7 +478,12 @@ export default function Home() {
               gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', 
               gap: '40px' 
             }}>
-              <div style={{ textAlign: 'center', padding: '30px' }}>
+              <div style={{ 
+                background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)', 
+                borderRadius: '15px', 
+                padding: '30px',
+                border: '2px solid #e2e8f0'
+              }}>
                 <div style={{ 
                   width: '60px', 
                   height: '60px', 
@@ -267,15 +499,31 @@ export default function Home() {
                 }}>
                   1
                 </div>
-                <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '15px', color: '#1a202c' }}>
-                  Connect Wallet
+                <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '15px', color: '#1a202c', textAlign: 'center' }}>
+                  Set Up Your Wallet
                 </h3>
-                <p style={{ color: '#64748b', lineHeight: '1.6' }}>
-                  Connect your MetaMask or other Web3 wallet to get started with yield optimization.
-                </p>
+                <div style={{ color: '#64748b', lineHeight: '1.6' }}>
+                  <p style={{ marginBottom: '15px' }}>
+                    <strong>Install MetaMask:</strong> Download the MetaMask browser extension or mobile app
+                  </p>
+                  <p style={{ marginBottom: '15px' }}>
+                    <strong>Create Account:</strong> Set up your wallet and securely store your seed phrase
+                  </p>
+                  <p style={{ marginBottom: '15px' }}>
+                    <strong>Add Funds:</strong> Buy ETH or MATIC from an exchange and send to your wallet
+                  </p>
+                  <p>
+                    <strong>Connect:</strong> Click "Connect Wallet" on our platform
+                  </p>
+                </div>
               </div>
               
-              <div style={{ textAlign: 'center', padding: '30px' }}>
+              <div style={{ 
+                background: 'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)', 
+                borderRadius: '15px', 
+                padding: '30px',
+                border: '2px solid #bbf7d0'
+              }}>
                 <div style={{ 
                   width: '60px', 
                   height: '60px', 
@@ -291,15 +539,31 @@ export default function Home() {
                 }}>
                   2
                 </div>
-                <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '15px', color: '#1a202c' }}>
-                  Set Preferences
+                <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '15px', color: '#1a202c', textAlign: 'center' }}>
+                  Choose Your Strategy
                 </h3>
-                <p style={{ color: '#64748b', lineHeight: '1.6' }}>
-                  Choose your investment amount and risk tolerance. Our AI will find the best opportunities for you.
-                </p>
+                <div style={{ color: '#64748b', lineHeight: '1.6' }}>
+                  <p style={{ marginBottom: '15px' }}>
+                    <strong>Investment Amount:</strong> Enter how much you want to invest (minimum $100)
+                  </p>
+                  <p style={{ marginBottom: '15px' }}>
+                    <strong>Risk Level:</strong> Choose Conservative, Moderate, or Aggressive
+                  </p>
+                  <p style={{ marginBottom: '15px' }}>
+                    <strong>Network:</strong> Select Ethereum or Polygon (lower fees)
+                  </p>
+                  <p>
+                    <strong>Review:</strong> Check the AI's recommended allocation
+                  </p>
+                </div>
               </div>
               
-              <div style={{ textAlign: 'center', padding: '30px' }}>
+              <div style={{ 
+                background: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)', 
+                borderRadius: '15px', 
+                padding: '30px',
+                border: '2px solid #fbbf24'
+              }}>
                 <div style={{ 
                   width: '60px', 
                   height: '60px', 
@@ -315,12 +579,97 @@ export default function Home() {
                 }}>
                   3
                 </div>
-                <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '15px', color: '#1a202c' }}>
-                  Earn More
+                <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '15px', color: '#1a202c', textAlign: 'center' }}>
+                  Start Earning
                 </h3>
-                <p style={{ color: '#64748b', lineHeight: '1.6' }}>
-                  Watch your yields grow as our AI continuously optimizes your portfolio across the best DeFi protocols.
-                </p>
+                <div style={{ color: '#64748b', lineHeight: '1.6' }}>
+                  <p style={{ marginBottom: '15px' }}>
+                    <strong>Approve Strategy:</strong> Review and approve the AI's recommendations
+                  </p>
+                  <p style={{ marginBottom: '15px' }}>
+                    <strong>Execute Trades:</strong> Confirm transactions in your wallet
+                  </p>
+                  <p style={{ marginBottom: '15px' }}>
+                    <strong>Monitor Performance:</strong> Track your yields in real-time
+                  </p>
+                  <p>
+                    <strong>Auto-Optimize:</strong> Let AI rebalance as market conditions change
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Beginner Tips */}
+            <div style={{ 
+              background: 'linear-gradient(135deg, #1e3a8a 0%, #7c3aed 50%, #ec4899 100%)', 
+              borderRadius: '20px', 
+              padding: '40px', 
+              marginTop: '60px',
+              color: 'white'
+            }}>
+              <h3 style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '30px', textAlign: 'center' }}>
+                💡 Beginner Tips
+              </h3>
+              <div style={{ 
+                display: 'grid', 
+                gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', 
+                gap: '25px' 
+              }}>
+                <div style={{ 
+                  background: 'rgba(255, 255, 255, 0.1)', 
+                  borderRadius: '12px', 
+                  padding: '20px',
+                  backdropFilter: 'blur(10px)'
+                }}>
+                  <h4 style={{ fontSize: '1.2rem', fontWeight: 'bold', marginBottom: '10px' }}>
+                    🚀 Start Small
+                  </h4>
+                  <p style={{ fontSize: '0.95rem', lineHeight: '1.5', opacity: 0.9 }}>
+                    Begin with a small amount ($100-500) to learn the platform and understand how DeFi works before investing larger sums.
+                  </p>
+                </div>
+                
+                <div style={{ 
+                  background: 'rgba(255, 255, 255, 0.1)', 
+                  borderRadius: '12px', 
+                  padding: '20px',
+                  backdropFilter: 'blur(10px)'
+                }}>
+                  <h4 style={{ fontSize: '1.2rem', fontWeight: 'bold', marginBottom: '10px' }}>
+                    ⛽ Gas Fees
+                  </h4>
+                  <p style={{ fontSize: '0.95rem', lineHeight: '1.5', opacity: 0.9 }}>
+                    Ethereum gas fees can be high. Consider using Polygon network for lower fees, especially for smaller investments.
+                  </p>
+                </div>
+                
+                <div style={{ 
+                  background: 'rgba(255, 255, 255, 0.1)', 
+                  borderRadius: '12px', 
+                  padding: '20px',
+                  backdropFilter: 'blur(10px)'
+                }}>
+                  <h4 style={{ fontSize: '1.2rem', fontWeight: 'bold', marginBottom: '10px' }}>
+                    📚 Learn DeFi
+                  </h4>
+                  <p style={{ fontSize: '0.95rem', lineHeight: '1.5', opacity: 0.9 }}>
+                    Understand basic DeFi concepts like liquidity pools, yield farming, and impermanent loss to make informed decisions.
+                  </p>
+                </div>
+                
+                <div style={{ 
+                  background: 'rgba(255, 255, 255, 0.1)', 
+                  borderRadius: '12px', 
+                  padding: '20px',
+                  backdropFilter: 'blur(10px)'
+                }}>
+                  <h4 style={{ fontSize: '1.2rem', fontWeight: 'bold', marginBottom: '10px' }}>
+                    🔒 Security First
+                  </h4>
+                  <p style={{ fontSize: '0.95rem', lineHeight: '1.5', opacity: 0.9 }}>
+                    Never share your seed phrase, use hardware wallets for large amounts, and always verify contract addresses.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
