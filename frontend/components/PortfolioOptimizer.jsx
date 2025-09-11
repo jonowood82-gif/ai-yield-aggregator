@@ -11,6 +11,7 @@ export default function PortfolioOptimizer({ account }) {
   const [error, setError] = useState(null);
   const [userBalances, setUserBalances] = useState(null);
   const [loadingBalances, setLoadingBalances] = useState(false);
+  const [currentNetwork, setCurrentNetwork] = useState('');
 
   useEffect(() => {
     loadProtocols();
@@ -19,8 +20,32 @@ export default function PortfolioOptimizer({ account }) {
   useEffect(() => {
     if (account) {
       loadUserBalances();
+      getCurrentNetwork();
     }
   }, [account]);
+
+  const getCurrentNetwork = async () => {
+    if (typeof window.ethereum !== 'undefined') {
+      try {
+        const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+        if (chainId === '0x89') {
+          setCurrentNetwork('🟣 Polygon');
+        } else if (chainId === '0x1') {
+          setCurrentNetwork('🔵 Ethereum');
+        } else if (chainId === '0x13881') {
+          setCurrentNetwork('🟣 Polygon Mumbai (Testnet)');
+        } else if (chainId === '0xaa36a7') {
+          setCurrentNetwork('🔵 Sepolia (Testnet)');
+        } else {
+          setCurrentNetwork('❓ Unknown Network');
+        }
+      } catch (error) {
+        setCurrentNetwork('❓ Unknown Network');
+      }
+    } else {
+      setCurrentNetwork('❓ No Wallet');
+    }
+  };
 
   const loadProtocols = async () => {
     try {
@@ -83,6 +108,31 @@ export default function PortfolioOptimizer({ account }) {
       <h2 style={{ color: 'white', marginBottom: '20px', fontSize: '1.8rem' }}>
         AI Portfolio Optimizer
       </h2>
+
+      {/* Network Status Display */}
+      {account && (
+        <div style={{ 
+          background: 'rgba(59, 130, 246, 0.2)', 
+          padding: '15px', 
+          borderRadius: '12px',
+          border: '1px solid rgba(59, 130, 246, 0.3)',
+          marginBottom: '20px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '10px'
+        }}>
+          <div style={{ 
+            width: '12px', 
+            height: '12px', 
+            borderRadius: '50%', 
+            backgroundColor: '#3b82f6',
+            animation: 'pulse 2s infinite'
+          }} />
+          <span style={{ color: 'white', fontWeight: 'bold' }}>
+            Connected to: {currentNetwork}
+          </span>
+        </div>
+      )}
 
       {/* User Balance Display */}
       {account && (

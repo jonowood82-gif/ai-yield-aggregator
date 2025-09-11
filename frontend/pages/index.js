@@ -5,6 +5,7 @@ import SimpleWallet from '../components/SimpleWallet';
 import PortfolioOptimizer from '../components/PortfolioOptimizer';
 import TransactionHistory from '../components/TransactionHistory';
 import PortfolioPerformance from '../components/PortfolioPerformance';
+import NetworkIndicator from '../components/NetworkIndicator';
 
 export default function Home() {
   const [account, setAccount] = useState('');
@@ -19,6 +20,9 @@ export default function Home() {
       </Head>
 
       <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #1e3a8a 0%, #7c3aed 50%, #ec4899 100%)' }}>
+        {/* Network Indicator */}
+        <NetworkIndicator />
+        
         {/* Navigation */}
         <nav style={{ padding: '20px 0' }}>
           <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 20px' }}>
