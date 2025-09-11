@@ -128,8 +128,8 @@ class BalanceService {
     
     const networkTokens = tokens[chainId] || tokens['1']; // Default to Ethereum if network not found
 
-    // Get native balance (ETH or MATIC)
-    const nativeSymbol = chainId === '137' ? 'MATIC' : 'ETH';
+    // Get native balance (ETH or POL)
+    const nativeSymbol = chainId === '137' ? 'POL' : 'ETH';
     balances[nativeSymbol] = await this.getETHBalance(userAddress);
 
     // Get token balances
@@ -195,7 +195,7 @@ class BalanceService {
     try {
       // CoinGecko API endpoint for multiple coins
       const response = await fetch(
-        'https://api.coingecko.com/api/v3/simple/price?ids=ethereum,usd-coin,tether,dai,weth,matic-network,wrapped-bitcoin,chainlink,uniswap,aave,curve-dao-token,compound-governance-token&vs_currencies=usd'
+        'https://api.coingecko.com/api/v3/simple/price?ids=ethereum,usd-coin,tether,dai,weth,polygon,wrapped-bitcoin,chainlink,uniswap,aave,curve-dao-token,compound-governance-token&vs_currencies=usd'
       );
       
       if (!response.ok) {
@@ -207,12 +207,12 @@ class BalanceService {
       // Map CoinGecko IDs to our symbols
       return {
         'ETH': data.ethereum?.usd || 2000,
-        'MATIC': data['matic-network']?.usd || 0.8,
+        'POL': data.polygon?.usd || 0.8,
         'USDC': data['usd-coin']?.usd || 1,
         'USDT': data.tether?.usd || 1,
         'DAI': data.dai?.usd || 1,
         'WETH': data.weth?.usd || 2000,
-        'WMATIC': data['matic-network']?.usd || 0.8,
+        'WMATIC': data.polygon?.usd || 0.8,
         'WBTC': data['wrapped-bitcoin']?.usd || 30000,
         'LINK': data.chainlink?.usd || 15,
         'UNI': data.uniswap?.usd || 8,
@@ -225,7 +225,7 @@ class BalanceService {
       // Fallback to mock prices if API fails
       return {
         'ETH': 2000,
-        'MATIC': 0.8,
+        'POL': 0.8,
         'USDC': 1,
         'USDT': 1,
         'DAI': 1,

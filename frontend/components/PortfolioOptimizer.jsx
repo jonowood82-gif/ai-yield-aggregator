@@ -29,7 +29,7 @@ export default function PortfolioOptimizer({ account }) {
       try {
         const chainId = await window.ethereum.request({ method: 'eth_chainId' });
         if (chainId === '0x89') {
-          setCurrentNetwork('🟣 Polygon');
+          setCurrentNetwork('🟣 Polygon (POL)');
         } else if (chainId === '0x1') {
           setCurrentNetwork('🔵 Ethereum');
         } else if (chainId === '0x13881') {
@@ -169,6 +169,7 @@ export default function PortfolioOptimizer({ account }) {
                   const getTokenIcon = (symbol) => {
                     const icons = {
                       'ETH': '🔵',
+                      'POL': '🟣',
                       'MATIC': '🟣',
                       'USDC': '💙',
                       'USDT': '💚',
