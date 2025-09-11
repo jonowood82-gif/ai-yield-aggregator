@@ -164,19 +164,52 @@ export default function PortfolioOptimizer({ account }) {
               </div>
               
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '10px' }}>
-                {Object.entries(userBalances.usdBalances).map(([symbol, data]) => (
-                  <div key={symbol} style={{
-                    background: 'rgba(255, 255, 255, 0.1)',
-                    padding: '10px',
-                    borderRadius: '8px',
-                    textAlign: 'center'
-                  }}>
-                    <div style={{ color: 'white', fontWeight: 'bold' }}>{symbol}</div>
-                    <div style={{ color: '#86efac', fontSize: '0.9rem' }}>
-                      ${data.usdValue.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                {Object.entries(userBalances.usdBalances).map(([symbol, data]) => {
+                  // Get token icon
+                  const getTokenIcon = (symbol) => {
+                    const icons = {
+                      'ETH': '🔵',
+                      'MATIC': '🟣',
+                      'USDC': '💙',
+                      'USDT': '💚',
+                      'DAI': '🟡',
+                      'WETH': '🔵',
+                      'WMATIC': '🟣',
+                      'WBTC': '🟠',
+                      'LINK': '🔗',
+                      'UNI': '🦄',
+                      'AAVE': '👻',
+                      'CRV': '🌀',
+                      'COMP': '🏛️'
+                    };
+                    return icons[symbol] || '💰';
+                  };
+
+                  return (
+                    <div key={symbol} style={{
+                      background: 'rgba(255, 255, 255, 0.1)',
+                      padding: '12px',
+                      borderRadius: '8px',
+                      textAlign: 'center',
+                      border: '1px solid rgba(255, 255, 255, 0.2)'
+                    }}>
+                      <div style={{ fontSize: '1.2rem', marginBottom: '5px' }}>
+                        {getTokenIcon(symbol)}
+                      </div>
+                      <div style={{ color: 'white', fontWeight: 'bold', fontSize: '0.9rem' }}>
+                        {symbol}
+                      </div>
+                      <div style={{ color: '#86efac', fontSize: '0.8rem', marginTop: '2px' }}>
+                        ${data.usdValue.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                      </div>
+                      {data.balance && data.balance !== '0' && (
+                        <div style={{ color: '#cbd5e1', fontSize: '0.7rem', marginTop: '2px' }}>
+                          {parseFloat(data.balance).toFixed(4)} {symbol}
+                        </div>
+                      )}
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           ) : (
