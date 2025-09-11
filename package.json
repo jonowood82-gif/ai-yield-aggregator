@@ -1,0 +1,27 @@
+﻿{
+  "name": "ai-yield-aggregator",
+  "version": "1.0.0",
+  "description": "AI-powered DeFi yield optimization platform",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd backend && python app.py",
+    "build": "cd frontend && npm run build",
+    "start": "cd frontend && npm start",
+    "install:all": "npm install && cd frontend && npm install && cd ../backend && pip install -r requirements.txt"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "keywords": [
+    "defi",
+    "yield-farming",
+    "ai",
+    "blockchain",
+    "ethereum",
+    "web3"
+  ],
+  "author": "Your Name",
+  "license": "MIT"
+}

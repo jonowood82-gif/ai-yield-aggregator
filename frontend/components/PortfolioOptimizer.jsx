@@ -1,0 +1,350 @@
+import React, { useState, useEffect } from 'react';
+import ApiService from '../services/api';
+import BalanceService from '../services/balanceService';
+
+export default function PortfolioOptimizer({ account }) {
+  const [amount, setAmount] = useState(10000);
+  const [riskTolerance, setRiskTolerance] = useState('medium');
+  const [protocols, setProtocols] = useState([]);
+  const [optimization, setOptimization] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [userBalances, setUserBalances] = useState(null);
+  const [loadingBalances, setLoadingBalances] = useState(false);
+
+  useEffect(() => {
+    loadProtocols();
+  }, []);
+
+  useEffect(() => {
+    if (account) {
+      loadUserBalances();
+    }
+  }, [account]);
+
+  const loadProtocols = async () => {
+    try {
+      const data = await ApiService.getProtocols();
+      setProtocols(Object.values(data.protocols));
+    } catch (error) {
+      setError('Failed to load protocols');
+    }
+  };
+
+  const loadUserBalances = async () => {
+    if (!account) return;
+    
+    setLoadingBalances(true);
+    setError(null); // Clear previous errors
+    try {
+      // Initialize BalanceService with wallet provider
+      await BalanceService.connectWallet();
+      
+      const balances = await BalanceService.getAllBalances(account);
+      const usdData = await BalanceService.getUSDValue(balances);
+      setUserBalances(usdData);
+      
+      // Set the amount to user's total balance
+      setAmount(usdData.totalUSD);
+    } catch (error) {
+      console.error('Error loading balances:', error);
+      setError('Failed to load wallet balances: ' + error.message);
+    } finally {
+      setLoadingBalances(false);
+    }
+  };
+
+  const handleOptimize = async () => {
+    if (!account) {
+      setError('Please connect your wallet first');
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+    try {
+      const result = await ApiService.optimizePortfolio(amount, riskTolerance);
+      setOptimization(result);
+    } catch (error) {
+      setError('Failed to optimize portfolio');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div style={{ 
+      background: 'rgba(255, 255, 255, 0.1)', 
+      padding: '30px', 
+      borderRadius: '20px',
+      backdropFilter: 'blur(10px)',
+      margin: '20px 0'
+    }}>
+      <h2 style={{ color: 'white', marginBottom: '20px', fontSize: '1.8rem' }}>
+        AI Portfolio Optimizer
+      </h2>
+
+      {/* User Balance Display */}
+      {account && (
+        <div style={{ 
+          background: 'rgba(34, 197, 94, 0.2)', 
+          padding: '20px', 
+          borderRadius: '12px',
+          border: '1px solid rgba(34, 197, 94, 0.3)',
+          marginBottom: '20px'
+        }}>
+          <h3 style={{ color: '#86efac', marginBottom: '15px' }}>
+            💰 Your Wallet Balance
+          </h3>
+          
+          {loadingBalances ? (
+            <div style={{ color: '#e2e8f0' }}>Loading balances...</div>
+          ) : userBalances ? (
+            <div>
+              <div style={{ 
+                display: 'flex', 
+                justifyContent: 'space-between', 
+                alignItems: 'center',
+                marginBottom: '15px'
+              }}>
+                <span style={{ color: '#e2e8f0', fontSize: '1.1rem' }}>Total Portfolio Value:</span>
+                <span style={{ color: '#86efac', fontSize: '1.5rem', fontWeight: 'bold' }}>
+                  ${userBalances.totalUSD.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                </span>
+              </div>
+              
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '10px' }}>
+                {Object.entries(userBalances.usdBalances).map(([symbol, data]) => (
+                  <div key={symbol} style={{
+                    background: 'rgba(255, 255, 255, 0.1)',
+                    padding: '10px',
+                    borderRadius: '8px',
+                    textAlign: 'center'
+                  }}>
+                    <div style={{ color: 'white', fontWeight: 'bold' }}>{symbol}</div>
+                    <div style={{ color: '#86efac', fontSize: '0.9rem' }}>
+                      ${data.usdValue.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div style={{ color: '#e2e8f0' }}>No balances found</div>
+          )}
+        </div>
+      )}
+      
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
+        <div>
+          <label style={{ color: '#e2e8f0', display: 'block', marginBottom: '8px' }}>
+            Investment Amount (USD)
+          </label>
+          <input
+            type="number"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            style={{
+              width: '100%',
+              padding: '12px',
+              borderRadius: '8px',
+              border: '1px solid rgba(255, 255, 255, 0.3)',
+              background: 'rgba(0, 0, 0, 0.3)',
+              color: 'white',
+              fontSize: '1rem'
+            }}
+            placeholder="Enter amount"
+          />
+        </div>
+        
+        <div>
+          <label style={{ color: '#e2e8f0', display: 'block', marginBottom: '8px' }}>
+            Risk Tolerance
+          </label>
+          <select
+            value={riskTolerance}
+            onChange={(e) => setRiskTolerance(e.target.value)}
+            style={{
+              width: '100%',
+              padding: '12px',
+              borderRadius: '8px',
+              border: '1px solid rgba(255, 255, 255, 0.3)',
+              background: 'rgba(0, 0, 0, 0.3)',
+              color: 'white',
+              fontSize: '1rem'
+            }}
+          >
+            <option value="low" style={{ background: '#1a202c', color: 'white' }}>Low Risk</option>
+            <option value="medium" style={{ background: '#1a202c', color: 'white' }}>Medium Risk</option>
+            <option value="high" style={{ background: '#1a202c', color: 'white' }}>High Risk</option>
+          </select>
+        </div>
+      </div>
+
+      <button
+        onClick={handleOptimize}
+        disabled={loading || !account}
+        style={{
+          background: loading ? 'rgba(255, 255, 255, 0.3)' : 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)',
+          color: 'white',
+          border: 'none',
+          padding: '15px 30px',
+          borderRadius: '10px',
+          cursor: loading ? 'not-allowed' : 'pointer',
+          fontWeight: 'bold',
+          fontSize: '1.1rem',
+          width: '100%',
+          marginBottom: '20px'
+        }}
+      >
+        {loading ? ' AI Optimizing...' : ' Optimize Portfolio'}
+      </button>
+
+      {error && (
+        <div style={{ 
+          background: 'rgba(239, 68, 68, 0.2)', 
+          color: '#fca5a5', 
+          padding: '15px', 
+          borderRadius: '8px',
+          marginBottom: '20px',
+          border: '1px solid rgba(239, 68, 68, 0.3)'
+        }}>
+          {error}
+        </div>
+      )}
+
+      {optimization && (
+        <div style={{ 
+          background: 'rgba(34, 197, 94, 0.2)', 
+          padding: '20px', 
+          borderRadius: '12px',
+          border: '1px solid rgba(34, 197, 94, 0.3)'
+        }}>
+          <h3 style={{ color: '#86efac', marginBottom: '15px' }}>
+            🎯 Advanced AI Optimization Results
+          </h3>
+          
+          {/* Key Metrics Grid */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '15px', marginBottom: '20px' }}>
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ color: '#e2e8f0', fontSize: '0.9rem' }}>Expected APY</div>
+              <div style={{ color: '#86efac', fontSize: '1.5rem', fontWeight: 'bold' }}>
+                {optimization.expected_apy}%
+              </div>
+            </div>
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ color: '#e2e8f0', fontSize: '0.9rem' }}>Daily Earnings</div>
+              <div style={{ color: '#86efac', fontSize: '1.5rem', fontWeight: 'bold' }}>
+                ${optimization.expected_daily}
+              </div>
+            </div>
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ color: '#e2e8f0', fontSize: '0.9rem' }}>Monthly Earnings</div>
+              <div style={{ color: '#86efac', fontSize: '1.5rem', fontWeight: 'bold' }}>
+                ${optimization.expected_monthly}
+              </div>
+            </div>
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ color: '#e2e8f0', fontSize: '0.9rem' }}>Risk Level</div>
+              <div style={{ 
+                color: optimization.risk_level === 'Conservative' ? '#86efac' : 
+                       optimization.risk_level === 'Moderate' ? '#fbbf24' : '#f87171', 
+                fontSize: '1.2rem', 
+                fontWeight: 'bold' 
+              }}>
+                {optimization.risk_level}
+              </div>
+            </div>
+          </div>
+
+          {/* Advanced Metrics */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: '10px', marginBottom: '20px' }}>
+            <div style={{ textAlign: 'center', background: 'rgba(255, 255, 255, 0.1)', padding: '10px', borderRadius: '8px' }}>
+              <div style={{ color: '#e2e8f0', fontSize: '0.8rem' }}>Sharpe Ratio</div>
+              <div style={{ color: '#86efac', fontSize: '1.1rem', fontWeight: 'bold' }}>
+                {optimization.sharpe_ratio}
+              </div>
+            </div>
+            <div style={{ textAlign: 'center', background: 'rgba(255, 255, 255, 0.1)', padding: '10px', borderRadius: '8px' }}>
+              <div style={{ color: '#e2e8f0', fontSize: '0.8rem' }}>Risk Score</div>
+              <div style={{ color: '#fbbf24', fontSize: '1.1rem', fontWeight: 'bold' }}>
+                {optimization.risk_score}
+              </div>
+            </div>
+            <div style={{ textAlign: 'center', background: 'rgba(255, 255, 255, 0.1)', padding: '10px', borderRadius: '8px' }}>
+              <div style={{ color: '#e2e8f0', fontSize: '0.8rem' }}>Diversification</div>
+              <div style={{ color: '#86efac', fontSize: '1.1rem', fontWeight: 'bold' }}>
+                {optimization.diversification_score}%
+              </div>
+            </div>
+            <div style={{ textAlign: 'center', background: 'rgba(255, 255, 255, 0.1)', padding: '10px', borderRadius: '8px' }}>
+              <div style={{ color: '#e2e8f0', fontSize: '0.8rem' }}>Confidence</div>
+              <div style={{ color: '#86efac', fontSize: '1.1rem', fontWeight: 'bold' }}>
+                {optimization.optimization_confidence}%
+              </div>
+            </div>
+          </div>
+
+          {/* Recommended Allocation */}
+          <div>
+            <div style={{ color: '#e2e8f0', fontSize: '0.9rem', marginBottom: '10px', fontWeight: 'bold' }}>
+              🤖 AI-Recommended Allocation:
+            </div>
+            {Object.entries(optimization.recommendations).map(([protocol, allocation]) => {
+              const percentage = ((allocation / amount) * 100).toFixed(1);
+              return (
+                <div key={protocol} style={{ 
+                  display: 'flex', 
+                  justifyContent: 'space-between', 
+                  alignItems: 'center',
+                  padding: '12px 0',
+                  borderBottom: '1px solid rgba(255, 255, 255, 0.1)'
+                }}>
+                  <div>
+                    <span style={{ color: 'white', textTransform: 'capitalize', fontWeight: 'bold' }}>
+                      {protocol}
+                    </span>
+                    <div style={{ color: '#cbd5e1', fontSize: '0.8rem' }}>
+                      {percentage}% allocation
+                    </div>
+                  </div>
+                  <span style={{ color: '#86efac', fontWeight: 'bold', fontSize: '1.1rem' }}>
+                    ${allocation.toLocaleString()}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {protocols.length > 0 && (
+        <div style={{ marginTop: '30px' }}>
+          <h3 style={{ color: 'white', marginBottom: '15px' }}>
+            📊 Available Protocols
+          </h3>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
+            {protocols.map((protocol, index) => (
+              <div key={index} style={{
+                background: 'rgba(255, 255, 255, 0.05)',
+                padding: '15px',
+                borderRadius: '10px',
+                border: '1px solid rgba(255, 255, 255, 0.1)'
+              }}>
+                <div style={{ color: 'white', fontWeight: 'bold', marginBottom: '8px' }}>
+                  {protocol.name}
+                </div>
+                <div style={{ color: '#86efac', fontSize: '1.2rem', fontWeight: 'bold' }}>
+                  {protocol.apy}% APY
+                </div>
+                <div style={{ color: '#e2e8f0', fontSize: '0.8rem', marginTop: '5px' }}>
+                  Risk: {protocol.risk}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
