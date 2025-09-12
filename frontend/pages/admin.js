@@ -25,7 +25,15 @@ export default function Admin() {
 
   const checkAdminStatus = async () => {
     if (typeof window.ethereum !== 'undefined' && account) {
-      const isAdminWallet = ADMIN_ADDRESSES.includes(account.toLowerCase());
+      // Check both lowercase and original format
+      const isAdminWallet = ADMIN_ADDRESSES.includes(account.toLowerCase()) || 
+                           ADMIN_ADDRESSES.includes(account);
+      console.log('Checking admin status:', {
+        account: account,
+        accountLower: account.toLowerCase(),
+        adminAddresses: ADMIN_ADDRESSES,
+        isAdmin: isAdminWallet
+      });
       setIsAdmin(isAdminWallet);
     }
   };
