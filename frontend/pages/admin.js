@@ -14,7 +14,7 @@ export default function Admin() {
 
   // Admin wallet addresses (add your wallet address here)
   const ADMIN_ADDRESSES = [
-    '0xfb4d1ab9435c08ff0094eae4e98ce3a9904f4edc', // Your wallet address (lowercase)
+    '0xFB4d1Ab9435C08Ff0094eaE4e98cE3A9904f4EDC', // Your wallet address (checksummed)
     // Add more admin addresses if needed
   ];
 
