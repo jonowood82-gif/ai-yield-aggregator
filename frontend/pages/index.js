@@ -42,7 +42,7 @@ export default function Home() {
                   ⚡
                 </div>
                 <span style={{ fontSize: '1.8rem', fontWeight: 'bold', color: 'white' }}>
-                  YieldAI
+                  YieldAI v2.0
                 </span>
               </div>
               <div style={{ display: 'flex', gap: '30px', alignItems: 'center' }}>
