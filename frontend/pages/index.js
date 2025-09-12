@@ -13,7 +13,7 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>AI Yield Aggregator - Maximize Your DeFi Returns</title>
+        <title>AI Yield Aggregator - Maximize Your DeFi Returns v2.0</title>
         <meta name="description" content="AI-powered DeFi yield optimization platform that automatically finds the best returns across multiple protocols" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
