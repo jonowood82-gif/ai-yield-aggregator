@@ -76,7 +76,7 @@ export default function Admin() {
       const signer = await provider.getSigner();
       
       // Contract address and ABI
-      const CONTRACT_ADDRESS = '0xcBb0d31C13D8981541FAD675F2178956c7c5D091';
+      const CONTRACT_ADDRESS = '0x000E7780560412B866C9346C78A30D9A82F67838';
       const CONTRACT_ABI = [
         {
           "inputs": [],
@@ -231,7 +231,7 @@ export default function Admin() {
               🔐 Connected as: {account.slice(0, 6)}...{account.slice(-4)}
             </p>
             <p style={{ color: '#0369a1', margin: 0, fontSize: '0.9rem' }}>
-              📄 Contract: <a href="https://sepolia.etherscan.io/address/0xcBb0d31C13D8981541FAD675F2178956c7c5D091" target="_blank" rel="noopener noreferrer" style={{ color: '#0369a1' }}>0xcBb0d31C13D8981541FAD675F2178956c7c5D091</a>
+              📄 Contract: <a href="https://sepolia.etherscan.io/address/0x000E7780560412B866C9346C78A30D9A82F67838" target="_blank" rel="noopener noreferrer" style={{ color: '#0369a1' }}>0x000E7780560412B866C9346C78A30D9A82F67838</a>
             </p>
           </div>
         </div>

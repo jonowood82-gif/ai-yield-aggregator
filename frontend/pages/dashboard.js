@@ -1,5 +1,6 @@
 ﻿import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
+import { ethers } from 'ethers';
 
 export default function Dashboard() {
   const [portfolio, setPortfolio] = useState({
@@ -10,6 +11,136 @@ export default function Dashboard() {
   });
   const [loading, setLoading] = useState(false);
   const [walletConnected, setWalletConnected] = useState(false);
+  const [account, setAccount] = useState('');
+  const [contractBalance, setContractBalance] = useState(0);
+  const [usdcBalance, setUsdcBalance] = useState(0);
+  const [depositAmount, setDepositAmount] = useState('');
+  const [isDepositing, setIsDepositing] = useState(false);
+
+  // Contract addresses
+  const CONTRACT_ADDRESS = '0x000E7780560412B866C9346C78A30D9A82F67838'; // Enhanced contract with USDC support
+  const USDC_ADDRESS = '0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238'; // Sepolia USDC
+  
+  const CONTRACT_ABI = [
+    {
+      "inputs": [{"internalType": "address", "name": "_usdcAddress", "type": "address"}],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "inputs": [],
+      "name": "owner",
+      "outputs": [{"internalType": "address", "name": "", "type": "address"}],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [{"internalType": "uint256", "name": "amount", "type": "uint256"}],
+      "name": "depositUSDC",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [{"internalType": "address", "name": "user", "type": "address"}],
+      "name": "getUserTotalBalance",
+      "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ];
+
+  const USDC_ABI = [
+    {
+      "inputs": [{"internalType": "address", "name": "account", "type": "address"}],
+      "name": "balanceOf",
+      "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [{"internalType": "address", "name": "spender", "type": "address"}, {"internalType": "uint256", "name": "amount", "type": "uint256"}],
+      "name": "approve",
+      "outputs": [{"internalType": "bool", "name": "", "type": "bool"}],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ];
+
+  const connectWallet = async () => {
+    if (typeof window.ethereum !== 'undefined') {
+      try {
+        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        setAccount(accounts[0]);
+        setWalletConnected(true);
+        await loadBalances(accounts[0]);
+      } catch (error) {
+        console.error('Error connecting wallet:', error);
+        alert('Failed to connect wallet');
+      }
+    } else {
+      alert('MetaMask is not installed');
+    }
+  };
+
+  const loadBalances = async (userAccount) => {
+    if (!userAccount) return;
+    
+    try {
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      
+      // Load USDC balance
+      const usdcContract = new ethers.Contract(USDC_ADDRESS, USDC_ABI, provider);
+      const usdcBalance = await usdcContract.balanceOf(userAccount);
+      setUsdcBalance(parseFloat(ethers.formatUnits(usdcBalance, 6))); // USDC has 6 decimals
+      
+      // Load contract balance
+      const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, provider);
+      const contractBalance = await contract.getUserTotalBalance(userAccount);
+      setContractBalance(parseFloat(ethers.formatUnits(contractBalance, 6)));
+      
+    } catch (error) {
+      console.error('Error loading balances:', error);
+    }
+  };
+
+  const depositUSDC = async () => {
+    if (!depositAmount || parseFloat(depositAmount) <= 0) {
+      alert('Please enter a valid amount');
+      return;
+    }
+
+    setIsDepositing(true);
+    try {
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const signer = await provider.getSigner();
+      
+      const usdcContract = new ethers.Contract(USDC_ADDRESS, USDC_ABI, signer);
+      const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
+      
+      const amount = ethers.parseUnits(depositAmount, 6); // USDC has 6 decimals
+      
+      // Approve USDC spending
+      const approveTx = await usdcContract.approve(CONTRACT_ADDRESS, amount);
+      await approveTx.wait();
+      
+      // Deposit to contract
+      const depositTx = await contract.depositUSDC(amount);
+      await depositTx.wait();
+      
+      // Reload balances
+      await loadBalances(account);
+      setDepositAmount('');
+      
+      alert(`Successfully deposited ${depositAmount} USDC!`);
+      
+    } catch (error) {
+      console.error('Error depositing USDC:', error);
+      alert('Failed to deposit USDC');
+    } finally {
+      setIsDepositing(false);
+    }
+  };
 
   useEffect(() => {
     // Simulate loading portfolio data
@@ -25,7 +156,6 @@ export default function Dashboard() {
           { protocol: 'Curve', apy: 18.7, allocation: 0.1, value: 12500 }
         ]
       });
-      setWalletConnected(true);
     }, 1000);
   }, []);
 
@@ -58,7 +188,7 @@ export default function Dashboard() {
             Connect your wallet to access the AI yield optimizer
           </p>
           <button 
-            onClick={() => setWalletConnected(true)}
+            onClick={connectWallet}
             style={{
               background: 'white',
               color: '#667eea',
@@ -123,7 +253,7 @@ export default function Dashboard() {
                   fontSize: '0.9rem',
                   fontWeight: '500'
                 }}>
-                  0x1234...5678
+                  {account ? `${account.slice(0, 6)}...${account.slice(-4)}` : '0x1234...5678'}
                 </div>
                 <button style={{ 
                   background: 'none', 
@@ -266,6 +396,125 @@ export default function Dashboard() {
                 </div>
               </div>
             </div>
+          </div>
+
+          {/* USDC Deposit Section */}
+          <div style={{ 
+            background: 'white', 
+            borderRadius: '15px', 
+            padding: '30px', 
+            marginBottom: '30px',
+            boxShadow: '0 4px 6px rgba(0,0,0,0.05)',
+            border: '1px solid #e2e8f0'
+          }}>
+            <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#1a202c', marginBottom: '10px' }}>
+              💰 USDC Management
+            </h3>
+            <p style={{ color: '#64748b', marginBottom: '30px' }}>
+              Deposit USDC to start earning with AI optimization
+            </p>
+            
+            <div style={{ 
+              display: 'grid', 
+              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
+              gap: '20px', 
+              marginBottom: '30px' 
+            }}>
+              <div style={{ 
+                background: '#f0f9ff', 
+                padding: '20px', 
+                borderRadius: '15px',
+                border: '1px solid #0ea5e9'
+              }}>
+                <h4 style={{ color: '#0369a1', margin: '0 0 10px 0' }}>Wallet USDC</h4>
+                <p style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#1a202c', margin: 0 }}>
+                  {usdcBalance.toFixed(2)} USDC
+                </p>
+              </div>
+              
+              <div style={{ 
+                background: '#f0fdf4', 
+                padding: '20px', 
+                borderRadius: '15px',
+                border: '1px solid #22c55e'
+              }}>
+                <h4 style={{ color: '#15803d', margin: '0 0 10px 0' }}>In Contract</h4>
+                <p style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#1a202c', margin: 0 }}>
+                  {contractBalance.toFixed(2)} USDC
+                </p>
+              </div>
+            </div>
+
+            <div style={{ 
+              display: 'flex', 
+              gap: '15px', 
+              alignItems: 'end',
+              flexWrap: 'wrap'
+            }}>
+              <div style={{ flex: '1', minWidth: '200px' }}>
+                <label style={{ 
+                  display: 'block', 
+                  color: '#374151', 
+                  fontSize: '0.9rem', 
+                  fontWeight: '500', 
+                  marginBottom: '8px' 
+                }}>
+                  Deposit Amount (USDC)
+                </label>
+                <input
+                  type="number"
+                  value={depositAmount}
+                  onChange={(e) => setDepositAmount(e.target.value)}
+                  placeholder="Enter amount"
+                  style={{
+                    width: '100%',
+                    padding: '12px 16px',
+                    border: '2px solid #e5e7eb',
+                    borderRadius: '8px',
+                    fontSize: '1rem',
+                    outline: 'none',
+                    transition: 'border-color 0.2s'
+                  }}
+                  onFocus={(e) => e.target.style.borderColor = '#3b82f6'}
+                  onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+                />
+              </div>
+              
+              <button
+                onClick={depositUSDC}
+                disabled={isDepositing || !depositAmount || parseFloat(depositAmount) <= 0}
+                style={{
+                  background: isDepositing ? '#9ca3af' : 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                  color: 'white',
+                  border: 'none',
+                  padding: '12px 24px',
+                  borderRadius: '8px',
+                  fontSize: '1rem',
+                  fontWeight: 'bold',
+                  cursor: isDepositing ? 'not-allowed' : 'pointer',
+                  transition: 'transform 0.2s',
+                  minWidth: '120px'
+                }}
+                onMouseOver={(e) => !isDepositing && (e.target.style.transform = 'scale(1.05)')}
+                onMouseOut={(e) => !isDepositing && (e.target.style.transform = 'scale(1)')}
+              >
+                {isDepositing ? '⏳ Depositing...' : '💰 Deposit'}
+              </button>
+            </div>
+            
+            {contractBalance > 0 && (
+              <div style={{ 
+                background: '#fef3c7', 
+                padding: '15px', 
+                borderRadius: '10px', 
+                marginTop: '20px',
+                border: '1px solid #f59e0b'
+              }}>
+                <p style={{ color: '#d97706', margin: 0, fontSize: '0.9rem' }}>
+                  💡 You have {contractBalance.toFixed(2)} USDC in the contract. The AI will optimize this for maximum yield!
+                </p>
+              </div>
+            )}
           </div>
 
           {/* AI Optimization Section */}
