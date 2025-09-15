@@ -1,29 +1,10 @@
-require("@nomicfoundation/hardhat-toolbox");
+﻿require("@nomicfoundation/hardhat-ethers");
 
-/** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
-  solidity: {
-    version: "0.8.19",
-    settings: {
-      optimizer: {
-        enabled: true,
-        runs: 200
-      }
-    }
-  },
+  solidity: "0.8.19",
   networks: {
-    hardhat: {
-      chainId: 1337
-    },
-    localhost: {
-      url: "http://127.0.0.1:8545"
-    },
     sepolia: {
       url: process.env.SEPOLIA_URL || "",
-      accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
-    },
-    polygon: {
-      url: process.env.POLYGON_URL || "https://polygon-rpc.com/",
       accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
     }
   },

@@ -3,3 +3,8 @@
 [33mf74ad08[m Add network indicator to show current network (ETH/Polygon) status
 [33m82b8727[m Add comprehensive How It Works and How To sections for beginners
 [33m512649c[m Add Polygon network support with network switching and token balances
+[33m668a253[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m Force deployment: Update homepage title to trigger Vercel rebuild
+[33m42eb1a9[m Remove conflicting vercel.json and duplicate admin files
+[33m1d92981[m Move admin page to root directory for Vercel compatibility
+[33me39c3a8[m Add Vercel config and backup admin page
+[33m4facd9e[m Fix ethers import for admin page compatibility
