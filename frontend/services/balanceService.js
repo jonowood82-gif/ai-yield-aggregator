@@ -92,10 +92,11 @@ class BalanceService {
     
     if (isTestnet) {
       console.log('⚠️ Connected to testnet. Using testnet token addresses.');
-      // For testnets, we'll skip token balance fetching since they don't have real value
+      // For testnets, we'll still fetch token balances but use testnet addresses
       const nativeSymbol = chainId === '80001' ? 'MATIC' : 'ETH';
       balances[nativeSymbol] = await this.getETHBalance(userAddress);
-      return balances;
+      
+      // Continue to fetch token balances for testnets
     }
     
     // Token addresses by network
