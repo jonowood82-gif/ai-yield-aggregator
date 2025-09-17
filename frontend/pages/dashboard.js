@@ -14,6 +14,7 @@ export default function Dashboard() {
   const [account, setAccount] = useState('');
   const [contractBalance, setContractBalance] = useState(0);
   const [usdcBalance, setUsdcBalance] = useState(0);
+  const [ethBalance, setEthBalance] = useState(0);
   const [depositAmount, setDepositAmount] = useState('');
   const [isDepositing, setIsDepositing] = useState(false);
   const [isWithdrawing, setIsWithdrawing] = useState(false);
@@ -38,6 +39,13 @@ export default function Dashboard() {
     {
       "inputs": [{"internalType": "uint256", "name": "amount", "type": "uint256"}],
       "name": "depositUSDC",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [{"internalType": "uint256", "name": "amount", "type": "uint256"}],
+      "name": "withdrawUSDC",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -89,6 +97,10 @@ export default function Dashboard() {
     
     try {
       const provider = new ethers.BrowserProvider(window.ethereum);
+      
+      // Load ETH balance
+      const ethBalance = await provider.getBalance(userAccount);
+      setEthBalance(parseFloat(ethers.formatEther(ethBalance)));
       
       // Load USDC balance
       const usdcContract = new ethers.Contract(USDC_ADDRESS, USDC_ABI, provider);
@@ -174,21 +186,28 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
-    // Simulate loading portfolio data
-    setTimeout(() => {
+    // Calculate real portfolio data based on actual balances
+    const calculatePortfolio = () => {
+      // ETH value in USD (using mock price for testnet)
+      const ethValueUSD = ethBalance * 2000; // Mock ETH price for testnet
+      const totalValue = usdcBalance + contractBalance + ethValueUSD;
+      const totalYield = contractBalance > 0 ? 9.22 : 0; // Only show yield if funds are deployed
+      const dailyEarnings = (contractBalance * totalYield / 100) / 365; // Only yield on deployed funds
+      
       setPortfolio({
-        totalValue: 125000,
-        totalYield: 12.8,
-        dailyEarnings: 43.84,
-        strategies: [
-          { protocol: 'Compound', apy: 8.5, allocation: 0.4, value: 50000 },
-          { protocol: 'Aave', apy: 12.3, allocation: 0.3, value: 37500 },
-          { protocol: 'Yearn', apy: 15.2, allocation: 0.2, value: 25000 },
-          { protocol: 'Curve', apy: 18.7, allocation: 0.1, value: 12500 }
-        ]
+        totalValue: totalValue,
+        totalYield: totalYield,
+        dailyEarnings: dailyEarnings,
+        strategies: contractBalance > 0 ? [
+          { protocol: 'Aave', apy: 12.3, allocation: 0.366, value: contractBalance * 0.366 },
+          { protocol: 'Compound', apy: 8.5, allocation: 0.343, value: contractBalance * 0.343 },
+          { protocol: 'Curve', apy: 6.2, allocation: 0.291, value: contractBalance * 0.291 }
+        ] : []
       });
-    }, 1000);
-  }, []);
+    };
+    
+    calculatePortfolio();
+  }, [usdcBalance, contractBalance, ethBalance]);
 
   if (!walletConnected) {
     return (
