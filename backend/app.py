@@ -10,7 +10,12 @@ from datetime import datetime, timedelta
 from functools import wraps
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, origins=[
+    "https://ai-yield-aggregator.vercel.app",
+    "https://*.vercel.app", 
+    "http://localhost:3000",
+    "http://127.0.0.1:3000"
+])
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -580,14 +585,21 @@ if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     debug = os.environ.get('FLASK_ENV') == 'development'
     
-    print("🚀 Starting AI Yield Aggregator Backend...")
+    print("🚀 Starting AI Yield Aggregator Backend v2.0.0...")
     print("📊 API Endpoints:")
     print("  GET  / - Health check")
     print("  GET  /api/protocols - Get all protocols")
     print("  POST /api/optimize - Optimize portfolio")
     print("  GET  /api/portfolio/<address> - Get portfolio")
     print("  GET  /api/analytics - Get analytics")
-    print("  GET  /api/transaction-history/<address> - Get transaction history")
+    print("  GET  /api/transactions/<address> - Get transaction history")
     print("  GET  /api/portfolio-performance/<address> - Get portfolio performance")
     print(f"🌐 Server running on port {port}")
-    app.run(debug=debug, host='0.0.0.0', port=port)
+    print(f"🔧 Debug mode: {debug}")
+    print(f"🌍 Environment: {os.environ.get('FLASK_ENV', 'production')}")
+    
+    try:
+        app.run(debug=debug, host='0.0.0.0', port=port, threaded=True)
+    except Exception as e:
+        logger.error(f"Failed to start server: {e}")
+        print(f"❌ Server failed to start: {e}")

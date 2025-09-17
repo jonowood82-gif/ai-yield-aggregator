@@ -16,7 +16,8 @@ export default function Home() {
         <title>AI Yield Aggregator - Maximize Your DeFi Returns v2.0</title>
         <meta name="description" content="AI-powered DeFi yield optimization platform that automatically finds the best returns across multiple protocols" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>" />
+        <meta name="theme-color" content="#3b82f6" />
       </Head>
 
       <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #1e3a8a 0%, #7c3aed 50%, #ec4899 100%)' }}>
