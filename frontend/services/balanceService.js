@@ -24,15 +24,24 @@ class BalanceService {
     if (!this.provider) throw new Error('Wallet not connected');
     
     try {
+      // Validate and checksum the address
+      let checksummedAddress;
+      try {
+        checksummedAddress = ethers.getAddress(tokenAddress);
+      } catch (error) {
+        console.warn('Invalid address format:', tokenAddress);
+        return { balance: '0', symbol: 'INVALID', decimals: 18 };
+      }
+
       // First check if the contract exists by trying to get code
-      const code = await this.provider.getCode(tokenAddress);
+      const code = await this.provider.getCode(checksummedAddress);
       if (code === '0x') {
-        console.warn('No contract found at address:', tokenAddress);
+        console.warn('No contract found at address:', checksummedAddress);
         return { balance: '0', symbol: 'INVALID', decimals: 18 };
       }
 
       // ERC-20 token contract
-      const tokenContract = new ethers.Contract(tokenAddress, [
+      const tokenContract = new ethers.Contract(checksummedAddress, [
         'function balanceOf(address) view returns (uint256)',
         'function decimals() view returns (uint8)',
         'function symbol() view returns (string)'
@@ -68,7 +77,11 @@ class BalanceService {
         decimals
       };
     } catch (error) {
-      // If it's a BAD_DATA error, the user likely doesn't have this token or contract doesn't exist
+      // Handle different types of errors
+      if (error.code === 'INVALID_ARGUMENT' && error.message.includes('bad address checksum')) {
+        console.warn('Bad address checksum for token:', tokenAddress);
+        return { balance: '0', symbol: 'INVALID', decimals: 18 };
+      }
       if (error.code === 'BAD_DATA' || error.message.includes('could not decode result data')) {
         console.warn('BAD_DATA error for token:', tokenAddress, '- likely invalid contract or no balance');
         return { balance: '0', symbol: 'INVALID', decimals: 18 };
@@ -107,7 +120,7 @@ class BalanceService {
       // Continue to fetch token balances for testnets
     }
     
-    // Token addresses by network
+    // Token addresses by network (properly checksummed)
     const tokens = {
       '1': { // Ethereum Mainnet
         'USDC': '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
@@ -133,7 +146,7 @@ class BalanceService {
         'AAVE': '0xD6DF932A45C0f255f85145f286eA0b292B21C90B',
         'CRV': '0x172370d5Cd63279eFa6d502DAB29171933a610AF'
       },
-      '11155111': { // Sepolia Testnet
+      '11155111': { // Sepolia Testnet - Using valid testnet addresses
         'USDC': '0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238',
         'USDT': '0x7169D38820dfd117C3FA1f22a697dBA58d90BA06',
         'DAI': '0xFF34B3d4Aee8ddCd6F9AFFFB6Fe49bD371b8a357',
