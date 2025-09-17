@@ -100,12 +100,77 @@ export default function PortfolioOptimizer({ account }) {
     setLoading(true);
     setError(null);
     try {
+      // First get the AI optimization recommendations
       const result = await ApiService.optimizePortfolio(amount, riskTolerance);
       setOptimization(result);
+      
+      // Now execute the actual deposit transaction
+      await executeDepositTransaction(amount);
+      
     } catch (error) {
-      setError('Failed to optimize portfolio');
+      console.error('Optimization error:', error);
+      setError('Failed to optimize portfolio: ' + error.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const executeDepositTransaction = async (depositAmount) => {
+    if (!window.ethereum) {
+      throw new Error('MetaMask not installed');
+    }
+
+    try {
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const signer = await provider.getSigner();
+      
+      // Contract address and ABI for the FeeCollector
+      const CONTRACT_ADDRESS = '0x000E7780560412B866C9346C78A30D9A82F67838';
+      const USDC_ADDRESS = '0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238'; // Sepolia USDC
+      
+      // USDC contract ABI
+      const usdcABI = [
+        "function approve(address spender, uint256 amount) returns (bool)",
+        "function balanceOf(address account) view returns (uint256)",
+        "function decimals() view returns (uint8)"
+      ];
+      
+      // FeeCollector contract ABI
+      const feeCollectorABI = [
+        "function depositUSDC(uint256 amount) external",
+        "function userBalances(address user) view returns (uint256)"
+      ];
+      
+      const usdcContract = new ethers.Contract(USDC_ADDRESS, usdcABI, signer);
+      const feeCollectorContract = new ethers.Contract(CONTRACT_ADDRESS, feeCollectorABI, signer);
+      
+      // Convert amount to USDC decimals (6 decimals for USDC)
+      const amountInWei = ethers.parseUnits(depositAmount.toString(), 6);
+      
+      // Check USDC balance
+      const balance = await usdcContract.balanceOf(account);
+      if (balance < amountInWei) {
+        throw new Error(`Insufficient USDC balance. You have ${ethers.formatUnits(balance, 6)} USDC, trying to deposit ${depositAmount} USDC`);
+      }
+      
+      // Approve USDC spending
+      console.log('Approving USDC spending...');
+      const approveTx = await usdcContract.approve(CONTRACT_ADDRESS, amountInWei);
+      await approveTx.wait();
+      console.log('USDC approval confirmed');
+      
+      // Deposit USDC to the contract
+      console.log('Depositing USDC to contract...');
+      const depositTx = await feeCollectorContract.depositUSDC(amountInWei);
+      await depositTx.wait();
+      console.log('USDC deposit confirmed');
+      
+      // Show success message
+      alert(`✅ Successfully deposited ${depositAmount} USDC! The AI will now optimize your portfolio for maximum yield.`);
+      
+    } catch (error) {
+      console.error('Transaction error:', error);
+      throw new Error(`Transaction failed: ${error.message}`);
     }
   };
 

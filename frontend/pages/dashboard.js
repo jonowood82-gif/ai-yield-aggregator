@@ -16,6 +16,7 @@ export default function Dashboard() {
   const [usdcBalance, setUsdcBalance] = useState(0);
   const [depositAmount, setDepositAmount] = useState('');
   const [isDepositing, setIsDepositing] = useState(false);
+  const [isWithdrawing, setIsWithdrawing] = useState(false);
 
   // Contract addresses
   const CONTRACT_ADDRESS = '0x000E7780560412B866C9346C78A30D9A82F67838'; // Enhanced contract with USDC support
@@ -139,6 +140,36 @@ export default function Dashboard() {
       alert('Failed to deposit USDC');
     } finally {
       setIsDepositing(false);
+    }
+  };
+
+  const withdrawUSDC = async () => {
+    if (contractBalance <= 0) {
+      alert('No funds to withdraw');
+      return;
+    }
+
+    setIsWithdrawing(true);
+    try {
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const signer = await provider.getSigner();
+      
+      const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
+      
+      // Withdraw all available balance
+      const withdrawTx = await contract.withdrawUSDC(ethers.parseUnits(contractBalance.toString(), 6));
+      await withdrawTx.wait();
+      
+      // Reload balances
+      await loadBalances(account);
+      
+      alert(`Successfully withdrew ${contractBalance.toFixed(2)} USDC!`);
+      
+    } catch (error) {
+      console.error('Error withdrawing USDC:', error);
+      alert('Failed to withdraw USDC: ' + error.message);
+    } finally {
+      setIsWithdrawing(false);
     }
   };
 
@@ -513,6 +544,44 @@ export default function Dashboard() {
                 <p style={{ color: '#d97706', margin: 0, fontSize: '0.9rem' }}>
                   💡 You have {contractBalance.toFixed(2)} USDC in the contract. The AI will optimize this for maximum yield!
                 </p>
+              </div>
+            )}
+
+            {/* Withdraw Section */}
+            {contractBalance > 0 && (
+              <div style={{ 
+                background: '#fef2f2', 
+                padding: '20px', 
+                borderRadius: '10px', 
+                marginTop: '20px',
+                border: '1px solid #fca5a5'
+              }}>
+                <h4 style={{ color: '#dc2626', margin: '0 0 15px 0', fontSize: '1.1rem' }}>
+                  💸 Withdraw Funds
+                </h4>
+                <p style={{ color: '#991b1b', margin: '0 0 15px 0', fontSize: '0.9rem' }}>
+                  Withdraw your USDC from the contract
+                </p>
+                <button
+                  onClick={withdrawUSDC}
+                  disabled={isWithdrawing}
+                  style={{
+                    background: isWithdrawing ? '#9ca3af' : 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+                    color: 'white',
+                    border: 'none',
+                    padding: '12px 24px',
+                    borderRadius: '8px',
+                    fontSize: '1rem',
+                    fontWeight: 'bold',
+                    cursor: isWithdrawing ? 'not-allowed' : 'pointer',
+                    transition: 'transform 0.2s',
+                    minWidth: '120px'
+                  }}
+                  onMouseOver={(e) => !isWithdrawing && (e.target.style.transform = 'scale(1.05)')}
+                  onMouseOut={(e) => !isWithdrawing && (e.target.style.transform = 'scale(1)')}
+                >
+                  {isWithdrawing ? '⏳ Withdrawing...' : `💰 Withdraw ${contractBalance.toFixed(2)} USDC`}
+                </button>
               </div>
             )}
           </div>
