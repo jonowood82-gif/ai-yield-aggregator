@@ -62,20 +62,28 @@ export default function PortfolioOptimizer({ account }) {
     setLoadingBalances(true);
     setError(null); // Clear previous errors
     try {
+      console.log('Starting balance loading for account:', account);
+      
       // Initialize BalanceService with wallet provider
       await BalanceService.connectWallet();
+      console.log('Wallet connected successfully');
       
       const balances = await BalanceService.getAllBalances(account);
+      console.log('Raw balances:', balances);
+      
       const usdData = await BalanceService.getUSDValue(balances);
+      console.log('USD data:', usdData);
+      
       setUserBalances(usdData);
       
       // Set the amount to user's total balance (but don't set to 0 if there are issues)
       if (usdData.totalUSD > 0) {
         setAmount(usdData.totalUSD);
       }
+      
+      console.log('Balance loading completed successfully');
     } catch (error) {
       console.error('Error loading balances:', error);
-      // Don't show error to user for balance loading issues - just log it
       console.warn('Balance loading failed, continuing with default amount');
       setUserBalances(null);
     } finally {
@@ -153,7 +161,7 @@ export default function PortfolioOptimizer({ account }) {
           
           {loadingBalances ? (
             <div style={{ color: '#e2e8f0' }}>Loading balances...</div>
-          ) : userBalances && userBalances.totalUSD > 0 ? (
+          ) : userBalances ? (
             <div>
               <div style={{ 
                 display: 'flex', 

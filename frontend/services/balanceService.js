@@ -181,22 +181,43 @@ class BalanceService {
     const isTestnet = chainId !== '1' && chainId !== '137'; // Not Ethereum or Polygon mainnet
     
     if (isTestnet) {
-      console.log('⚠️ Testnet detected. Showing testnet balances with $0 value.');
-      // For testnets, show balances but with $0 value since they have no real value
+      console.log('⚠️ Testnet detected. Showing testnet balances with mock USD values for demo.');
+      // For testnets, show balances with mock USD values for demo purposes
       const usdBalances = {};
       let totalUSD = 0;
       
+      // Mock prices for testnet demo
+      const mockPrices = {
+        'ETH': 2000,
+        'USDC': 1,
+        'USDT': 1,
+        'DAI': 1,
+        'WETH': 2000,
+        'WMATIC': 0.8,
+        'WBTC': 30000,
+        'LINK': 15,
+        'UNI': 8,
+        'AAVE': 120,
+        'CRV': 0.5,
+        'COMP': 50
+      };
+      
       for (const [symbol, balance] of Object.entries(balances)) {
         const balanceAmount = typeof balance === 'string' ? balance : balance.balance;
+        const price = mockPrices[symbol] || 0;
+        const usdValue = parseFloat(balanceAmount) * price;
+        
         usdBalances[symbol] = {
           balance: balanceAmount,
-          usdValue: 0, // Testnet tokens have no real value
-          price: 0
+          usdValue,
+          price
         };
-        console.log(`${symbol}: balance=${balanceAmount}, price=0 (testnet), usdValue=0`);
+        
+        totalUSD += usdValue;
+        console.log(`${symbol}: balance=${balanceAmount}, price=${price} (mock), usdValue=${usdValue}`);
       }
       
-      return { totalUSD: 0, usdBalances };
+      return { totalUSD, usdBalances };
     }
     
     // Get real-time prices from CoinGecko API for mainnet
