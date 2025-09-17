@@ -60,7 +60,7 @@ export default function Admin() {
       const provider = new ethers.BrowserProvider(window.ethereum);
       
       // Contract address and ABI for AI Yield Aggregator
-      const CONTRACT_ADDRESS = '0x000E7780560412B866C9346C78A30D9A82F67838';
+      const CONTRACT_ADDRESS = '0x94805547CAA2FA55d5B3A6448904Bc8a77f52CB5';
       const CONTRACT_ABI = [
         "function getStats() view returns (uint256, uint256, uint256, uint256)",
         "function withdrawFees() external",
@@ -103,7 +103,7 @@ export default function Admin() {
       const signer = await provider.getSigner();
       
       // Contract address and ABI
-      const CONTRACT_ADDRESS = '0x000E7780560412B866C9346C78A30D9A82F67838';
+      const CONTRACT_ADDRESS = '0x94805547CAA2FA55d5B3A6448904Bc8a77f52CB5';
       const CONTRACT_ABI = [
         {
           "inputs": [],

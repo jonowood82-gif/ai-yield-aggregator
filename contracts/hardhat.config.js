@@ -1,7 +1,16 @@
 ﻿require("@nomicfoundation/hardhat-ethers");
+require("dotenv").config();
 
 module.exports = {
-  solidity: "0.8.19",
+  solidity: {
+    version: "0.8.19",
+    settings: {
+      optimizer: {
+        enabled: true,
+        runs: 200
+      }
+    }
+  },
   networks: {
     sepolia: {
       url: process.env.SEPOLIA_URL || "",
@@ -9,7 +18,7 @@ module.exports = {
     }
   },
   paths: {
-    sources: "./",
+    sources: "./contracts",
     tests: "./test",
     cache: "./cache",
     artifacts: "./artifacts"

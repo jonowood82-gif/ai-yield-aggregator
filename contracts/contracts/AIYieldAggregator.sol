@@ -55,6 +55,7 @@ contract AIYieldAggregator is ReentrancyGuard, Ownable {
     event YieldGenerated(address indexed protocol, uint256 amount, uint256 timestamp);
     event FeesCollected(address indexed user, uint256 amount, uint256 timestamp);
     event ProtocolAllocationUpdated(address indexed protocol, uint256 percentage, uint256 timestamp);
+    event FeeWithdrawn(address indexed owner, uint256 amount);
     
     constructor() {
         // Initialize protocol allocations (AI-optimized)
@@ -205,9 +206,9 @@ contract AIYieldAggregator is ReentrancyGuard, Ownable {
         require(fees > 0, "No fees to withdraw");
         
         totalFeesCollected = 0;
-        IERC20(USDC).safeTransfer(owner, fees);
+        IERC20(USDC).safeTransfer(owner(), fees);
         
-        emit FeeWithdrawn(owner, fees);
+        emit FeeWithdrawn(owner(), fees);
     }
     
     /**
