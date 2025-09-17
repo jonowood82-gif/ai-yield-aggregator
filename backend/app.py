@@ -8,6 +8,7 @@ import logging
 import os
 from datetime import datetime, timedelta
 from functools import wraps
+from defi_service import defi_service
 
 app = Flask(__name__)
 CORS(app, origins=[
@@ -351,45 +352,31 @@ def home():
 @handle_errors
 @rate_limit(max_requests=60, window=60)
 def get_protocols():
-    """Get all available DeFi protocols with their current yields"""
-    import threading
-    
-    # Check if we need to refresh the cache
-    current_time = time.time()
-    if (protocol_cache["data"] is None or 
-        current_time - protocol_cache["timestamp"] > CACHE_DURATION):
+    """Get all available DeFi protocols with their current yields using real DeFi service"""
+    try:
+        # Use the new DeFi service to get real protocol data
+        protocol_data = defi_service.get_real_protocol_data()
         
-        # Fetch real data in a separate thread to avoid blocking
-        def fetch_data():
-            try:
-                real_data = fetch_real_protocol_data()
-                protocol_cache["data"] = real_data
-                protocol_cache["timestamp"] = current_time
-            except Exception as e:
-                print(f"Error in background fetch: {e}")
+        # Convert to the expected format
+        protocols = {}
+        for protocol_id, protocol_info in protocol_data.items():
+            protocols[protocol_id] = {
+                "name": protocol_info.protocol.title(),
+                "apy": protocol_info.apy,
+                "tvl": protocol_info.tvl,
+                "risk": defi_service._get_risk_level(protocol_info.risk_score).lower(),
+                "tokens": protocol_info.tokens
+            }
         
-        # Start background fetch
-        thread = threading.Thread(target=fetch_data)
-        thread.daemon = True
-        thread.start()
-        
-        # Return cached data if available, otherwise return mock data
-        if protocol_cache["data"]:
-            return jsonify({
-                "protocols": protocol_cache["data"],
-                "timestamp": datetime.now().isoformat(),
-                "source": "real_data"
-            })
-    
-    # Return cached real data or fallback to mock
-    if protocol_cache["data"]:
         return jsonify({
-            "protocols": protocol_cache["data"],
+            "protocols": protocols,
             "timestamp": datetime.now().isoformat(),
-            "source": "cached_real_data"
+            "source": "real_defi_service"
         })
-    else:
-        # Fallback mock data
+        
+    except Exception as e:
+        app.logger.error(f"Error fetching protocol data: {e}")
+        # Fallback to mock data
         mock_protocols = {
             "compound": {"name": "Compound", "apy": 8.5, "tvl": 2500000000, "risk": "low", "tokens": ["USDC", "USDT", "DAI"]},
             "aave": {"name": "Aave", "apy": 12.3, "tvl": 1800000000, "risk": "medium", "tokens": ["USDC", "USDT", "DAI", "ETH"]},
@@ -406,15 +393,36 @@ def get_protocols():
 @handle_errors
 @rate_limit(max_requests=30, window=60)
 def optimize_portfolio():
-    """Advanced AI-powered portfolio optimization"""
+    """Advanced AI-powered portfolio optimization using real DeFi service"""
     data = request.get_json()
     amount = data.get('amount', 10000)
     risk_tolerance = data.get('risk_tolerance', 'medium')
     
-    # Advanced AI optimization algorithm
-    optimization_result = advanced_portfolio_optimization(amount, risk_tolerance)
-    
-    return jsonify(optimization_result)
+    try:
+        # Use the new DeFi service for real optimization
+        optimization_result = defi_service.optimize_portfolio(amount, risk_tolerance)
+        
+        # Add execution strategy
+        execution_result = defi_service.execute_yield_strategy(
+            user_address="",  # Will be filled by frontend
+            amount=amount,
+            allocations=optimization_result['allocations']
+        )
+        
+        # Combine optimization and execution results
+        result = {
+            **optimization_result,
+            "execution": execution_result,
+            "timestamp": datetime.now().isoformat(),
+            "source": "real_defi_optimization"
+        }
+        
+        return jsonify(result)
+        
+    except Exception as e:
+        app.logger.error(f"Error in portfolio optimization: {e}")
+        # Fallback to mock optimization
+        return jsonify(advanced_portfolio_optimization(amount, risk_tolerance))
 
 @app.route('/api/portfolio/<address>', methods=['GET'])
 def get_portfolio(address):

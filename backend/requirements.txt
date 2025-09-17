@@ -15,3 +15,6 @@ psutil==5.9.6
 
 # Security
 cryptography==41.0.7
+
+# Data structures for DeFi service
+dataclasses==0.6

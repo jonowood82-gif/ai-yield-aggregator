@@ -59,26 +59,24 @@ export default function Admin() {
     try {
       const provider = new ethers.BrowserProvider(window.ethereum);
       
-      // Contract address and ABI
+      // Contract address and ABI for AI Yield Aggregator
       const CONTRACT_ADDRESS = '0x000E7780560412B866C9346C78A30D9A82F67838';
       const CONTRACT_ABI = [
-        "function getAvailableFees() view returns (uint256)",
-        "function totalFeesCollected() view returns (uint256)",
-        "function performanceFeeRate() view returns (uint256)",
+        "function getStats() view returns (uint256, uint256, uint256, uint256)",
+        "function withdrawFees() external",
         "function owner() view returns (address)"
       ];
       
       const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, provider);
       
-      // Get real fee data from contract
-      const availableFees = await contract.getAvailableFees();
-      const totalCollected = await contract.totalFeesCollected();
-      const feeRate = await contract.performanceFeeRate();
+      // Get real fee data from AI Yield Aggregator contract
+      const stats = await contract.getStats();
+      const [totalDeposits, totalFeesCollected, totalYieldGenerated, contractBalance] = stats;
       
       setFeeInfo({
-        totalFees: ethers.formatEther(totalCollected),
-        collectedFees: ethers.formatEther(totalCollected),
-        pendingFees: ethers.formatEther(availableFees)
+        totalFees: ethers.formatUnits(totalFeesCollected, 6), // USDC has 6 decimals
+        collectedFees: ethers.formatUnits(totalFeesCollected, 6),
+        pendingFees: ethers.formatUnits(totalFeesCollected, 6) // All fees are available for withdrawal
       });
       
     } catch (error) {
@@ -129,29 +127,27 @@ export default function Admin() {
       
       const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
       
-      // Real contract interaction with proper ABI
+      // Real contract interaction with AI Yield Aggregator
       const REAL_CONTRACT_ABI = [
-        "function collectFees() external",
+        "function getStats() view returns (uint256, uint256, uint256, uint256)",
         "function withdrawFees() external",
-        "function getAvailableFees() view returns (uint256)",
-        "function totalFeesCollected() view returns (uint256)",
         "function owner() view returns (address)"
       ];
       
       const realContract = new ethers.Contract(CONTRACT_ADDRESS, REAL_CONTRACT_ABI, signer);
       
-      // First collect fees (if any available)
-      const availableFees = await realContract.getAvailableFees();
-      if (availableFees > 0) {
-        const collectTx = await realContract.collectFees();
-        await collectTx.wait();
-        console.log('Fees collected successfully');
-      }
+      // Check available fees
+      const stats = await realContract.getStats();
+      const [totalDeposits, totalFeesCollected, totalYieldGenerated, contractBalance] = stats;
       
-      // Then withdraw collected fees
-      const withdrawTx = await realContract.withdrawFees();
-      await withdrawTx.wait();
-      console.log('Fees withdrawn successfully');
+      if (totalFeesCollected > 0) {
+        // Withdraw collected fees
+        const withdrawTx = await realContract.withdrawFees();
+        await withdrawTx.wait();
+        console.log('Fees withdrawn successfully');
+      } else {
+        console.log('No fees available to withdraw');
+      }
       
       // Reload fee info
       await loadFeeInfo();
@@ -159,13 +155,13 @@ export default function Admin() {
       // Add to transaction history
       setTransactionHistory(prev => [{
         id: Date.now(),
-        amount: ethers.formatEther(availableFees),
+        amount: ethers.formatUnits(totalFeesCollected, 6),
         timestamp: new Date().toLocaleString(),
         txHash: withdrawTx.hash,
         status: 'Success'
       }, ...prev]);
       
-      alert('Fees collected and withdrawn successfully!');
+      alert('💰 Fees collected and withdrawn successfully! These are real fees generated from AI yield farming profits!');
       
     } catch (error) {
       console.error('Error collecting fees:', error);

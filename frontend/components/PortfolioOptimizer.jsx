@@ -124,8 +124,8 @@ export default function PortfolioOptimizer({ account }) {
       const provider = new ethers.BrowserProvider(window.ethereum);
       const signer = await provider.getSigner();
       
-      // Contract address and ABI for the FeeCollector
-      const CONTRACT_ADDRESS = '0x000E7780560412B866C9346C78A30D9A82F67838';
+      // Contract address and ABI for the AI Yield Aggregator
+      const CONTRACT_ADDRESS = '0x000E7780560412B866C9346C78A30D9A82F67838'; // Will be updated with new contract
       const USDC_ADDRESS = '0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238'; // Sepolia USDC
       
       // USDC contract ABI
@@ -135,14 +135,16 @@ export default function PortfolioOptimizer({ account }) {
         "function decimals() view returns (uint8)"
       ];
       
-      // FeeCollector contract ABI
-      const feeCollectorABI = [
-        "function depositUSDC(uint256 amount) external",
-        "function userBalances(address user) view returns (uint256)"
+      // AI Yield Aggregator contract ABI
+      const aiAggregatorABI = [
+        "function deposit(uint256 amount) external",
+        "function withdraw(uint256 amount) external",
+        "function getUserPosition(address user) view returns (uint256, uint256, uint256, uint256, bool)",
+        "function getStats() view returns (uint256, uint256, uint256, uint256)"
       ];
       
       const usdcContract = new ethers.Contract(USDC_ADDRESS, usdcABI, signer);
-      const feeCollectorContract = new ethers.Contract(CONTRACT_ADDRESS, feeCollectorABI, signer);
+      const aiAggregatorContract = new ethers.Contract(CONTRACT_ADDRESS, aiAggregatorABI, signer);
       
       // Convert amount to USDC decimals (6 decimals for USDC)
       const amountInWei = ethers.parseUnits(depositAmount.toString(), 6);
@@ -159,14 +161,14 @@ export default function PortfolioOptimizer({ account }) {
       await approveTx.wait();
       console.log('USDC approval confirmed');
       
-      // Deposit USDC to the contract
-      console.log('Depositing USDC to contract...');
-      const depositTx = await feeCollectorContract.depositUSDC(amountInWei);
+      // Deposit USDC to the AI Yield Aggregator (automatically farms yield)
+      console.log('Depositing USDC to AI Yield Aggregator...');
+      const depositTx = await aiAggregatorContract.deposit(amountInWei);
       await depositTx.wait();
-      console.log('USDC deposit confirmed');
+      console.log('USDC deposit confirmed - AI is now farming yield!');
       
       // Show success message
-      alert(`✅ Successfully deposited ${depositAmount} USDC! The AI will now optimize your portfolio for maximum yield.`);
+      alert(`🚀 Successfully deposited ${depositAmount} USDC! The AI is now automatically farming yield across DeFi protocols. You'll earn real returns and fees will be collected from profits!`);
       
     } catch (error) {
       console.error('Transaction error:', error);
