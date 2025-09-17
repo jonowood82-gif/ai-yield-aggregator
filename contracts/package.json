@@ -1,14 +1,16 @@
 {
   "name": "ai-yield-aggregator-contracts",
-  "version": "1.0.0",
-  "description": "Smart contracts for AI Yield Aggregator",
+  "version": "2.0.0",
+  "description": "Smart contracts for AI Yield Aggregator - DeFi yield optimization platform",
   "main": "index.js",
   "scripts": {
     "compile": "npx hardhat compile",
     "deploy": "npx hardhat run scripts/deploy.js --network localhost",
     "deploy-sepolia": "npx hardhat run scripts/deploy.js --network sepolia",
     "deploy-polygon": "npx hardhat run scripts/deploy.js --network polygon",
-    "test": "npx hardhat test"
+    "test": "npx hardhat test",
+    "verify": "npx hardhat verify",
+    "clean": "npx hardhat clean"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^3.0.0",
@@ -16,5 +18,14 @@
   },
   "dependencies": {
     "ethers": "^6.15.0"
-  }
+  },
+  "keywords": [
+    "defi",
+    "yield-farming",
+    "smart-contracts",
+    "ethereum",
+    "solidity"
+  ],
+  "author": "AI Yield Aggregator Team",
+  "license": "MIT"
 }

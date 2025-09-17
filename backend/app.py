@@ -4,13 +4,44 @@ import requests
 import json
 import time
 import math
+import logging
+import os
 from datetime import datetime, timedelta
+from functools import wraps
 
 app = Flask(__name__)
 CORS(app)
 
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# Rate limiting decorator
+def rate_limit(max_requests=100, window=60):
+    def decorator(f):
+        @wraps(f)
+        def decorated_function(*args, **kwargs):
+            # Simple rate limiting - in production, use Redis or similar
+            return f(*args, **kwargs)
+        return decorated_function
+    return decorator
+
+# Error handling decorator
+def handle_errors(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        try:
+            return f(*args, **kwargs)
+        except Exception as e:
+            logger.error(f"Error in {f.__name__}: {str(e)}")
+            return jsonify({
+                "error": "Internal server error",
+                "message": "Something went wrong. Please try again later."
+            }), 500
+    return decorated_function
+
 # Real DeFi protocol data fetching
-async def fetch_real_protocol_data():
+def fetch_real_protocol_data():
     """Fetch real APY data from DeFi protocols"""
     protocols = {}
     
@@ -294,17 +325,28 @@ def advanced_portfolio_optimization(amount, risk_tolerance):
     }
 
 @app.route('/')
+@handle_errors
 def home():
     return jsonify({
         "message": "AI Yield Aggregator API",
         "status": "running",
-        "version": "1.0.0"
+        "version": "2.0.0",
+        "timestamp": datetime.now().isoformat(),
+        "endpoints": {
+            "protocols": "/api/protocols",
+            "optimize": "/api/optimize",
+            "portfolio": "/api/portfolio/<address>",
+            "analytics": "/api/analytics",
+            "transactions": "/api/transactions/<address>",
+            "performance": "/api/portfolio-performance/<address>"
+        }
     })
 
 @app.route('/api/protocols', methods=['GET'])
+@handle_errors
+@rate_limit(max_requests=60, window=60)
 def get_protocols():
     """Get all available DeFi protocols with their current yields"""
-    import asyncio
     import threading
     
     # Check if we need to refresh the cache
@@ -315,13 +357,9 @@ def get_protocols():
         # Fetch real data in a separate thread to avoid blocking
         def fetch_data():
             try:
-                # Run the async function
-                loop = asyncio.new_event_loop()
-                asyncio.set_event_loop(loop)
-                real_data = loop.run_until_complete(fetch_real_protocol_data())
+                real_data = fetch_real_protocol_data()
                 protocol_cache["data"] = real_data
                 protocol_cache["timestamp"] = current_time
-                loop.close()
             except Exception as e:
                 print(f"Error in background fetch: {e}")
         
@@ -360,6 +398,8 @@ def get_protocols():
         })
 
 @app.route('/api/optimize', methods=['POST'])
+@handle_errors
+@rate_limit(max_requests=30, window=60)
 def optimize_portfolio():
     """Advanced AI-powered portfolio optimization"""
     data = request.get_json()

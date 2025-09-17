@@ -33,6 +33,19 @@ export default function SimpleWallet({ onAccountChange }) {
     blockExplorerUrls: ['https://etherscan.io/'],
   };
 
+  // Sepolia testnet configuration
+  const sepoliaNetwork = {
+    chainId: '0xaa36a7', // 11155111 in hex
+    chainName: 'Sepolia',
+    nativeCurrency: {
+      name: 'SepoliaETH',
+      symbol: 'SepoliaETH',
+      decimals: 18,
+    },
+    rpcUrls: ['https://rpc.sepolia.org'],
+    blockExplorerUrls: ['https://sepolia.etherscan.io/'],
+  };
+
   // Check current network
   useEffect(() => {
     if (window.ethereum) {
@@ -41,6 +54,8 @@ export default function SimpleWallet({ onAccountChange }) {
           setNetwork('Polygon');
         } else if (chainId === '0x1') {
           setNetwork('Ethereum');
+        } else if (chainId === '0xaa36a7') {
+          setNetwork('Sepolia');
         } else {
           setNetwork('Unknown');
         }
@@ -85,6 +100,19 @@ export default function SimpleWallet({ onAccountChange }) {
     }
   };
 
+  // Switch to Sepolia testnet
+  const switchToSepolia = async () => {
+    try {
+      await window.ethereum.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: sepoliaNetwork.chainId }],
+      });
+      setNetwork('Sepolia');
+    } catch (error) {
+      console.error('Failed to switch to Sepolia:', error);
+    }
+  };
+
   const handleConnect = async () => {
     setIsConnecting(true);
     try {
@@ -102,6 +130,8 @@ export default function SimpleWallet({ onAccountChange }) {
           setNetwork('Polygon');
         } else if (chainId === '0x1') {
           setNetwork('Ethereum');
+        } else if (chainId === '0xaa36a7') {
+          setNetwork('Sepolia');
         } else {
           setNetwork('Unknown');
         }
@@ -222,6 +252,28 @@ export default function SimpleWallet({ onAccountChange }) {
                 }}
               >
                 🟣 Polygon
+              </button>
+              <button
+                onClick={() => {
+                  switchToSepolia();
+                  setShowNetworkSelector(false);
+                }}
+                style={{
+                  background: 'transparent',
+                  color: 'white',
+                  border: 'none',
+                  padding: '8px 12px',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  fontSize: '0.9rem',
+                  width: '100%',
+                  textAlign: 'left',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px'
+                }}
+              >
+                🧪 Sepolia (Testnet)
               </button>
             </div>
           )}

@@ -1,21 +1,29 @@
 {
-  "name": "yield-aggregator-frontend",
-  "version": "0.1.0",
+  "name": "ai-yield-aggregator-frontend",
+  "version": "2.0.0",
   "private": true,
+  "description": "AI-powered DeFi yield optimization platform frontend",
   "dependencies": {
-    "@walletconnect/web3-provider": "^1.8.0",
-    "@web3-react/core": "^8.2.3",
-    "@web3-react/injected-connector": "^6.0.7",
-    "@web3-react/walletconnect-connector": "^6.2.13",
     "ethers": "^6.15.0",
     "next": "^13.5.4",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "web3": "^4.16.0"
+    "react-dom": "^18.3.1"
   },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
-  }
+    "start": "next start",
+    "lint": "next lint",
+    "export": "next export"
+  },
+  "keywords": [
+    "defi",
+    "yield-farming",
+    "ai",
+    "blockchain",
+    "ethereum",
+    "web3"
+  ],
+  "author": "AI Yield Aggregator Team",
+  "license": "MIT"
 }
