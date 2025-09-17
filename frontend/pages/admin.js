@@ -54,13 +54,42 @@ export default function Admin() {
   };
 
   const loadFeeInfo = async () => {
-    // This would connect to your smart contract to get fee information
-    // For now, we'll simulate the data
-    setFeeInfo({
-      totalFees: '0.5',
-      collectedFees: '2.3',
-      pendingFees: '0.5'
-    });
+    if (!account) return;
+    
+    try {
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      
+      // Contract address and ABI
+      const CONTRACT_ADDRESS = '0x000E7780560412B866C9346C78A30D9A82F67838';
+      const CONTRACT_ABI = [
+        "function getAvailableFees() view returns (uint256)",
+        "function totalFeesCollected() view returns (uint256)",
+        "function performanceFeeRate() view returns (uint256)",
+        "function owner() view returns (address)"
+      ];
+      
+      const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, provider);
+      
+      // Get real fee data from contract
+      const availableFees = await contract.getAvailableFees();
+      const totalCollected = await contract.totalFeesCollected();
+      const feeRate = await contract.performanceFeeRate();
+      
+      setFeeInfo({
+        totalFees: ethers.formatEther(totalCollected),
+        collectedFees: ethers.formatEther(totalCollected),
+        pendingFees: ethers.formatEther(availableFees)
+      });
+      
+    } catch (error) {
+      console.error('Error loading fee info:', error);
+      // Fallback to placeholder data if contract call fails
+      setFeeInfo({
+        totalFees: '0.0',
+        collectedFees: '0.0',
+        pendingFees: '0.0'
+      });
+    }
   };
 
   const collectFees = async () => {
@@ -100,28 +129,43 @@ export default function Admin() {
       
       const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
       
-      // For now, we'll simulate a transaction since the contract is simple
-      // In a real implementation, you'd call contract.collectFees() here
+      // Real contract interaction with proper ABI
+      const REAL_CONTRACT_ABI = [
+        "function collectFees() external",
+        "function withdrawFees() external",
+        "function getAvailableFees() view returns (uint256)",
+        "function totalFeesCollected() view returns (uint256)",
+        "function owner() view returns (address)"
+      ];
       
-      // Simulate successful collection
-      setTimeout(() => {
-        setFeeInfo(prev => ({
-          ...prev,
-          collectedFees: (parseFloat(prev.collectedFees) + parseFloat(prev.pendingFees)).toFixed(2),
-          pendingFees: '0'
-        }));
-        
-        setTransactionHistory(prev => [{
-          id: Date.now(),
-          amount: feeInfo.pendingFees,
-          timestamp: new Date().toLocaleString(),
-          txHash: '0x' + Math.random().toString(16).substr(2, 64),
-          status: 'Success'
-        }, ...prev]);
-        
-        setIsLoading(false);
-        alert(`Successfully collected ${feeInfo.pendingFees} ETH in fees!`);
-      }, 2000);
+      const realContract = new ethers.Contract(CONTRACT_ADDRESS, REAL_CONTRACT_ABI, signer);
+      
+      // First collect fees (if any available)
+      const availableFees = await realContract.getAvailableFees();
+      if (availableFees > 0) {
+        const collectTx = await realContract.collectFees();
+        await collectTx.wait();
+        console.log('Fees collected successfully');
+      }
+      
+      // Then withdraw collected fees
+      const withdrawTx = await realContract.withdrawFees();
+      await withdrawTx.wait();
+      console.log('Fees withdrawn successfully');
+      
+      // Reload fee info
+      await loadFeeInfo();
+      
+      // Add to transaction history
+      setTransactionHistory(prev => [{
+        id: Date.now(),
+        amount: ethers.formatEther(availableFees),
+        timestamp: new Date().toLocaleString(),
+        txHash: withdrawTx.hash,
+        status: 'Success'
+      }, ...prev]);
+      
+      alert('Fees collected and withdrawn successfully!');
       
     } catch (error) {
       console.error('Error collecting fees:', error);

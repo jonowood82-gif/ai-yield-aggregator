@@ -295,6 +295,26 @@ export default function Dashboard() {
                 </span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+                <a href="/" style={{ 
+                  color: '#64748b', 
+                  textDecoration: 'none',
+                  fontSize: '1rem',
+                  padding: '8px 16px',
+                  borderRadius: '8px',
+                  border: '1px solid #e2e8f0',
+                  background: 'white',
+                  transition: 'all 0.3s ease'
+                }}
+                onMouseOver={(e) => {
+                  e.target.style.background = '#f8fafc';
+                  e.target.style.borderColor = '#cbd5e1';
+                }}
+                onMouseOut={(e) => {
+                  e.target.style.background = 'white';
+                  e.target.style.borderColor = '#e2e8f0';
+                }}>
+                  ← Return to Home
+                </a>
                 <div style={{ 
                   background: '#10b981', 
                   color: 'white', 
