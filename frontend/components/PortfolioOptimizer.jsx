@@ -69,11 +69,15 @@ export default function PortfolioOptimizer({ account }) {
       const usdData = await BalanceService.getUSDValue(balances);
       setUserBalances(usdData);
       
-      // Set the amount to user's total balance
-      setAmount(usdData.totalUSD);
+      // Set the amount to user's total balance (but don't set to 0 if there are issues)
+      if (usdData.totalUSD > 0) {
+        setAmount(usdData.totalUSD);
+      }
     } catch (error) {
       console.error('Error loading balances:', error);
-      setError('Failed to load wallet balances: ' + error.message);
+      // Don't show error to user for balance loading issues - just log it
+      console.warn('Balance loading failed, continuing with default amount');
+      setUserBalances(null);
     } finally {
       setLoadingBalances(false);
     }
@@ -149,7 +153,7 @@ export default function PortfolioOptimizer({ account }) {
           
           {loadingBalances ? (
             <div style={{ color: '#e2e8f0' }}>Loading balances...</div>
-          ) : userBalances ? (
+          ) : userBalances && userBalances.totalUSD > 0 ? (
             <div>
               <div style={{ 
                 display: 'flex', 
@@ -214,7 +218,12 @@ export default function PortfolioOptimizer({ account }) {
               </div>
             </div>
           ) : (
-            <div style={{ color: '#e2e8f0' }}>No balances found</div>
+            <div style={{ color: '#e2e8f0' }}>
+              <div style={{ marginBottom: '10px' }}>Unable to load wallet balances</div>
+              <div style={{ fontSize: '0.9rem', color: '#cbd5e1' }}>
+                You can still use the optimizer by entering an amount manually below
+              </div>
+            </div>
           )}
         </div>
       )}

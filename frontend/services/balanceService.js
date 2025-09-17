@@ -24,6 +24,13 @@ class BalanceService {
     if (!this.provider) throw new Error('Wallet not connected');
     
     try {
+      // First check if the contract exists by trying to get code
+      const code = await this.provider.getCode(tokenAddress);
+      if (code === '0x') {
+        console.warn('No contract found at address:', tokenAddress);
+        return { balance: '0', symbol: 'INVALID', decimals: 18 };
+      }
+
       // ERC-20 token contract
       const tokenContract = new ethers.Contract(tokenAddress, [
         'function balanceOf(address) view returns (uint256)',
@@ -61,12 +68,13 @@ class BalanceService {
         decimals
       };
     } catch (error) {
-      // If it's a BAD_DATA error, the user likely doesn't have this token
+      // If it's a BAD_DATA error, the user likely doesn't have this token or contract doesn't exist
       if (error.code === 'BAD_DATA' || error.message.includes('could not decode result data')) {
-        return { balance: '0', symbol: 'TOKEN', decimals: 18 };
+        console.warn('BAD_DATA error for token:', tokenAddress, '- likely invalid contract or no balance');
+        return { balance: '0', symbol: 'INVALID', decimals: 18 };
       }
       console.error('Error fetching token balance:', error);
-      return { balance: '0', symbol: 'UNKNOWN', decimals: 18 };
+      return { balance: '0', symbol: 'ERROR', decimals: 18 };
     }
   }
 
@@ -145,9 +153,14 @@ class BalanceService {
     const nativeSymbol = chainId === '137' ? 'POL' : 'ETH';
     balances[nativeSymbol] = await this.getETHBalance(userAddress);
 
-    // Get token balances
+    // Get token balances with error handling
     for (const [symbol, address] of Object.entries(networkTokens)) {
-      balances[symbol] = await this.getTokenBalance(address, userAddress);
+      try {
+        balances[symbol] = await this.getTokenBalance(address, userAddress);
+      } catch (error) {
+        console.warn(`Failed to get balance for ${symbol} (${address}):`, error);
+        balances[symbol] = { balance: '0', symbol, decimals: 18 };
+      }
     }
 
     return balances;
