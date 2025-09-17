@@ -300,7 +300,7 @@ export default function Admin() {
             }}>
               <h3 style={{ color: '#0369a1', margin: '0 0 10px 0' }}>Total Fees</h3>
               <p style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#1a202c', margin: 0 }}>
-                {feeInfo.totalFees} ETH
+                {feeInfo.totalFees} USDC
               </p>
             </div>
             
@@ -312,7 +312,7 @@ export default function Admin() {
             }}>
               <h3 style={{ color: '#15803d', margin: '0 0 10px 0' }}>Collected</h3>
               <p style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#1a202c', margin: 0 }}>
-                {feeInfo.collectedFees} ETH
+                {feeInfo.collectedFees} USDC
               </p>
             </div>
             
@@ -324,7 +324,7 @@ export default function Admin() {
             }}>
               <h3 style={{ color: '#d97706', margin: '0 0 10px 0' }}>Pending</h3>
               <p style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#1a202c', margin: 0 }}>
-                {feeInfo.pendingFees} ETH
+                {feeInfo.pendingFees} USDC
               </p>
             </div>
           </div>
@@ -348,7 +348,7 @@ export default function Admin() {
             onMouseOver={(e) => !isLoading && (e.target.style.transform = 'scale(1.05)')}
             onMouseOut={(e) => !isLoading && (e.target.style.transform = 'scale(1)')}
           >
-            {isLoading ? '⏳ Collecting...' : `💰 Collect ${feeInfo.pendingFees} ETH`}
+            {isLoading ? '⏳ Collecting...' : `💰 Collect ${feeInfo.pendingFees} USDC`}
           </button>
           
           {parseFloat(feeInfo.pendingFees) === 0 && (
@@ -386,7 +386,7 @@ export default function Admin() {
                   {transactionHistory.map((tx) => (
                     <tr key={tx.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
                       <td style={{ padding: '15px', fontWeight: 'bold', color: '#1a202c' }}>
-                        {tx.amount} ETH
+                        {tx.amount} USDC
                       </td>
                       <td style={{ padding: '15px', color: '#64748b' }}>
                         {tx.timestamp}
