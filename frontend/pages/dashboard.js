@@ -20,7 +20,7 @@ export default function Dashboard() {
   const [isWithdrawing, setIsWithdrawing] = useState(false);
 
   // Contract addresses
-  const CONTRACT_ADDRESS = '0x94805547CAA2FA55d5B3A6448904Bc8a77f52CB5'; // AI Yield Aggregator contract
+  const CONTRACT_ADDRESS = '0x44dc2AaDF5a87918526dc377e06733B6562D546E'; // Production AI Yield Aggregator
   const USDC_ADDRESS = '0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238'; // Sepolia USDC
   
   const CONTRACT_ABI = [

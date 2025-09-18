@@ -8,6 +8,7 @@
     "deploy": "npx hardhat run scripts/deploy.js --network localhost",
     "deploy-sepolia": "npx hardhat run scripts/deploy.js --network sepolia",
     "deploy-ai-aggregator": "npx hardhat run scripts/deploy-ai-aggregator.js --network sepolia",
+    "deploy-production": "npx hardhat run scripts/deploy-production.js --network sepolia",
     "deploy-polygon": "npx hardhat run scripts/deploy.js --network polygon",
     "test": "npx hardhat test",
     "verify": "npx hardhat verify",
